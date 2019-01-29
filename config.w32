@@ -1,0 +1,7 @@
+ARG_ENABLE('pprofile', 'pprofile support', 'no');
+
+if (PHP_PPROFILE != 'no') {
+	AC_DEFINE('HAVE_PPROFILE', 1, 'pprofile support enabled');
+
+	EXTENSION('pprofile', 'pprofile.c', null, '/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1');
+}
