@@ -12,5 +12,7 @@ extern zend_module_entry pprofile_module_entry;
 ZEND_TSRMLS_CACHE_EXTERN()
 # endif
 
-#endif	/* PHP_PPROFILE_H */
+PHP_MINFO_FUNCTION(pprofile);
+
+#endif    /* PHP_PPROFILE_H */
 
