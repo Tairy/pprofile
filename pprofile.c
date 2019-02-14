@@ -35,12 +35,16 @@ PHP_RINIT_FUNCTION (pprofile) {
   ZEND_TSRMLS_CACHE_UPDATE();
 #endif
 
+  tracing_request_init(TSRMLS_C);
+  tracing_determine_clock_source(TSRMLS_C);
+  
   return SUCCESS;
 }
 /* }}} */
 
 PHP_MINIT_FUNCTION (pprofile) {
-  
+
+  // TODO 一些宏还没调用
   _zend_execute_internal = zend_execute_internal;
   zend_execute_internal = pprofile_execute_internal;
 

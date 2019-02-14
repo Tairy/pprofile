@@ -26,6 +26,9 @@ pprofile_call_graph_bucket_t *tracing_call_graph_bucket_find(pprofile_call_graph
 void tracing_begin(zend_long flags TSRMLS_CC);
 void tracing_enter_root_frame(TSRMLS_D);
 
+void tracing_request_init(TSRMLS_D);
+void tracing_determine_clock_source();
+
 #define PPRG(v) ZEND_MODULE_GLOBALS_ACCESSOR(pprofile, v)
 
 static zend_always_inline void tracing_fast_free_frame(pprofile_frame_t *p TSRMLS_DC) {

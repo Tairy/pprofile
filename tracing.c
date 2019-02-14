@@ -157,3 +157,26 @@ pprofile_call_graph_bucket_t *tracing_call_graph_bucket_find(pprofile_call_graph
 
   return NULL;
 }
+
+void tracing_request_init(TSRMLS_D) {
+  PPRG(timebase_factor) = get_timebase_factor();
+  PPRG(enabled) = 0;
+  PPRG(flags) = 0;
+  PPRG(frame_free_list) = NULL;
+
+  PPRG(num_alloc) = 0;
+  PPRG(num_free) = 0;
+  PPRG(amount_alloc) = 0;
+}
+
+void tracing_determine_clock_source(TSRMLS_D) {
+  struct timespec res;
+
+  if (PPRG(clock_use_rdtsc) == 1) {
+    PPRG(clock_source) = PPROFILE_CLOCK_TSC;
+  } else if (clock_gettime(CLOCK_MONOTONIC, &res) == 0) {
+    PPRG(clock_source) = PPROFILE_CLOCK_CGT;
+  } else {
+    PPRG(clock_source) = PPROFILE_CLOCK_GTOD;
+  }
+}
