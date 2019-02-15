@@ -28,8 +28,20 @@ PHP_FUNCTION (pprofile_enable) {
   tracing_enter_root_frame(TSRMLS_C);
 }
 
-/* {{{ PHP_RINIT_FUNCTION
- */
+PHP_FUNCTION (pprofile_disable) {
+  tracing_end(TSRMLS_C);
+
+  array_init(return_value);
+
+  tracing_call_graph_append_to_array(return_value TSRMLS_CC);
+}
+
+PHP_GINIT_FUNCTION (pprofile) {
+  pprofile_globals->root = NULL;
+  pprofile_globals->call_graph_frames = NULL;
+  pprofile_globals->frame_free_list = NULL;
+}
+
 PHP_RINIT_FUNCTION (pprofile) {
 #if defined(ZTS) && defined(COMPILE_DL_PPROFILE)
   ZEND_TSRMLS_CACHE_UPDATE();
@@ -37,10 +49,9 @@ PHP_RINIT_FUNCTION (pprofile) {
 
   tracing_request_init(TSRMLS_C);
   tracing_determine_clock_source(TSRMLS_C);
-  
+
   return SUCCESS;
 }
-/* }}} */
 
 PHP_MINIT_FUNCTION (pprofile) {
 
@@ -54,15 +65,32 @@ PHP_MINIT_FUNCTION (pprofile) {
   return SUCCESS;
 }
 
-/* {{{ PHP_MINFO_FUNCTION
- */
+PHP_RSHUTDOWN_FUNCTION (pprofile) {
+  int i = 0;
+  pprofile_call_graph_bucket_t *bucket;
+
+  tracing_end(TSRMLS_C);
+
+  for (i = 0; i < PPROFILE_CALL_GRAPH_SLOTS; i++) {
+    bucket = PPRG(call_graph_buckets)[i];
+
+    while (bucket) {
+      PPRG(call_graph_buckets)[i] = bucket->next;
+      tracing_call_graph_bucket_free(bucket);
+      bucket = PPRG(call_graph_buckets)[i];
+    }
+  }
+
+  tracing_request_shutdown();
+
+  return SUCCESS;
+}
+
 PHP_MINFO_FUNCTION (pprofile) {
   php_info_print_table_start();
   php_info_print_table_header(2, "pprofile support", "enabled");
   php_info_print_table_end();
 }
-/* }}} */
-
 
 ZEND_DLEXPORT void pprofile_execute_internal(zend_execute_data *execute_data, zval *return_value) {
   int is_profiling = 1;
@@ -103,16 +131,12 @@ ZEND_DLEXPORT void pprofile_execute_ex(zend_execute_data *execute_data) {
   }
 }
 
-/* {{{ pprofile_functions[]
- */
 static const zend_function_entry pprofile_functions[] = {
     PHP_FE(pprofile_enable, NULL)
+    PHP_FE(pprofile_disable, NULL)
     PHP_FE_END
 };
-/* }}} */
 
-/* {{{ pprofile_module_entry
- */
 zend_module_entry pprofile_module_entry = {
     STANDARD_MODULE_HEADER,
     "pprofile",                    /* Extension name */
@@ -125,7 +149,6 @@ zend_module_entry pprofile_module_entry = {
     PHP_PPROFILE_VERSION,        /* Version */
     STANDARD_MODULE_PROPERTIES
 };
-/* }}} */
 
 #ifdef COMPILE_DL_PPROFILE
 # ifdef ZTS

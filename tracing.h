@@ -23,10 +23,18 @@ pprofile_call_graph_bucket_t *tracing_call_graph_bucket_find(pprofile_call_graph
                                                              pprofile_frame_t *current_frame,
                                                              pprofile_frame_t *previous,
                                                              zend_long key);
+void tracing_call_graph_append_to_array(zval *return_value TSRMLS_DC);
+void tracing_call_graph_get_parent_child_name(pprofile_call_graph_bucket_t *bucket,
+                                              char *symbol,
+                                              size_t symbol_len
+                                              TSRMLS_DC);
+void tracing_call_graph_bucket_free(pprofile_call_graph_bucket_t *bucket);
 void tracing_begin(zend_long flags TSRMLS_CC);
 void tracing_enter_root_frame(TSRMLS_D);
+void tracing_end(TSRMLS_D);
 
 void tracing_request_init(TSRMLS_D);
+void tracing_request_shutdown();
 void tracing_determine_clock_source();
 
 #define PPRG(v) ZEND_MODULE_GLOBALS_ACCESSOR(pprofile, v)

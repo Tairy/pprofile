@@ -21,6 +21,17 @@ zend_always_inline static int tracing_enter_frame_call_graph(zend_string *root_s
                                                              zend_execute_data *execute_data
                                                              TSRMLS_DC);
 
+static zend_always_inline void tracing_free_the_free_list(TSRMLS_D) {
+  pprofile_frame_t *frame = PPRG(frame_free_list);
+  pprofile_frame_t *current;
+
+  while (frame) {
+    current = frame;
+    frame = frame->prev_frame;
+    efree(current);
+  }
+}
+
 void tracing_enter_root_frame(TSRMLS_D) {
   PPRG(start_time) = time_milliseconds();
   PPRG(start_timestamp) = current_timestamp();
@@ -132,6 +143,105 @@ zend_ulong tracing_call_graph_bucket_key(pprofile_frame_t *frame) {
   return hash;
 }
 
+void tracing_call_graph_append_to_array(zval *return_value TSRMLS_DC) {
+  int i = 0;
+
+  pprofile_call_graph_bucket_t *bucket;
+  char symbol[512] = "";
+  zval
+  stats_zv, *stats = &stats_zv;
+
+  int as_mu = (PPRG(flags) & (PPROFILE_FLAGS_MEMORY_ALLOC_AS_MU | PPROFILE_FLAGS_MEMORY_MU))
+      == PPROFILE_FLAGS_MEMORY_ALLOC_AS_MU;
+
+  for (i = 0; i < PPROFILE_CALL_GRAPH_SLOTS; i++) {
+    bucket = PPRG(call_graph_buckets)[i];
+
+    while (bucket) {
+      tracing_call_graph_get_parent_child_name(bucket, symbol, sizeof(symbol) TSRMLS_CC);
+
+      array_init(stats);
+      add_assoc_long(stats, "ct", bucket->count);
+      add_assoc_long(stats, "wt", bucket->wall_time);
+
+      if (PPRG(flags) & PPROFILE_FLAGS_MEMORY_ALLOC) {
+        add_assoc_long(stats, "mem.na", bucket->num_alloc);
+        add_assoc_long(stats, "mem.nf", bucket->num_free);
+        add_assoc_long(stats, "mem.aa", bucket->amount_alloc);
+
+        if (as_mu) {
+          add_assoc_long(stats, "mu", bucket->amount_alloc);
+        }
+      }
+
+      if (PPRG(flags) & PPROFILE_FLAGS_CPU) {
+        add_assoc_long(stats, "cpu", bucket->cpu_time);
+      }
+
+      if (PPRG(flags) & PPROFILE_FLAGS_MEMORY_MU) {
+        add_assoc_long(stats, "mu", bucket->memory);
+      }
+
+      if (PPRG(flags) & PPROFILE_FLAGS_MEMORY_PMU) {
+        add_assoc_long(stats, "pmu", bucket->memory_peak);
+      }
+
+      add_assoc_zval(return_value, symbol, stats);
+
+      PPRG(call_graph_buckets)[i] = bucket->next;
+
+      tracing_call_graph_bucket_free(bucket);
+      bucket = PPRG(call_graph_buckets)[i];
+    }
+  }
+}
+
+void tracing_call_graph_get_parent_child_name(pprofile_call_graph_bucket_t *bucket,
+                                              char *symbol,
+                                              size_t symbol_len
+                                              TSRMLS_DC) {
+  if (bucket->parent_class) {
+    if (bucket->parent_recurse_level > 0) {
+      snprintf(symbol,
+               symbol_len,
+               "%s::%s@%d==>",
+               ZSTR_VAL(bucket->parent_class),
+               ZSTR_VAL(bucket->parent_function),
+               bucket->parent_recurse_level);
+    } else {
+      snprintf(symbol, symbol_len, "%s::%s==>", ZSTR_VAL(bucket->parent_class), ZSTR_VAL(bucket->parent_function));
+    }
+  } else if (bucket->parent_function) {
+    if (bucket->parent_recurse_level > 0) {
+      snprintf(symbol, symbol_len, "%s@%d==>", ZSTR_VAL(bucket->parent_function), bucket->parent_recurse_level);
+    } else {
+      snprintf(symbol, symbol_len, "%s==>", ZSTR_VAL(bucket->parent_function));
+    }
+  } else {
+    snprintf(symbol, symbol_len, "");
+  }
+
+  if (bucket->child_class) {
+    if (bucket->child_recurse_level > 0) {
+      snprintf(symbol,
+               symbol_len,
+               "%s%s::%s@%d",
+               symbol,
+               ZSTR_VAL(bucket->child_class),
+               ZSTR_VAL(bucket->child_function),
+               bucket->child_recurse_level);
+    } else {
+      snprintf(symbol, symbol_len, "%s%s::%s", symbol, ZSTR_VAL(bucket->child_class), ZSTR_VAL(bucket->child_function));
+    }
+  } else if (bucket->child_function) {
+    if (bucket->child_recurse_level > 0) {
+      snprintf(symbol, symbol_len, "%s%s@%d", symbol, ZSTR_VAL(bucket->child_function), bucket->child_recurse_level);
+    } else {
+      snprintf(symbol, symbol_len, "%s%s", symbol, ZSTR_VAL(bucket->child_function));
+    }
+  }
+}
+
 pprofile_call_graph_bucket_t *tracing_call_graph_bucket_find(pprofile_call_graph_bucket_t *bucket,
                                                              pprofile_frame_t *current_frame,
                                                              pprofile_frame_t *previous,
@@ -158,6 +268,26 @@ pprofile_call_graph_bucket_t *tracing_call_graph_bucket_find(pprofile_call_graph
   return NULL;
 }
 
+void tracing_call_graph_bucket_free(pprofile_call_graph_bucket_t *bucket) {
+  if (bucket->parent_class) {
+    zend_string_release(bucket->parent_class);
+  }
+
+  if (bucket->parent_function) {
+    zend_string_release(bucket->parent_function);
+  }
+
+  if (bucket->child_class) {
+    zend_string_release(bucket->child_class);
+  }
+
+  if (bucket->child_function) {
+    zend_string_release(bucket->child_function);
+  }
+
+  efree(bucket);
+}
+
 void tracing_request_init(TSRMLS_D) {
   PPRG(timebase_factor) = get_timebase_factor();
   PPRG(enabled) = 0;
@@ -169,6 +299,10 @@ void tracing_request_init(TSRMLS_D) {
   PPRG(amount_alloc) = 0;
 }
 
+void tracing_request_shutdown() {
+  tracing_free_the_free_list(TSRMLS_C);
+}
+
 void tracing_determine_clock_source(TSRMLS_D) {
   struct timespec res;
 
@@ -178,5 +312,31 @@ void tracing_determine_clock_source(TSRMLS_D) {
     PPRG(clock_source) = PPROFILE_CLOCK_CGT;
   } else {
     PPRG(clock_source) = PPROFILE_CLOCK_GTOD;
+  }
+}
+
+void tracing_end(TSRMLS_D) {
+  if (PPRG(enabled) == 1) {
+    zend_string_release(PPRG(root));
+  }
+
+  while (PPRG(call_graph_frames)) {
+    tracing_exit_frame_call_graph(TSRMLS_C);
+  }
+
+  PPRG(enabled) = 0;
+  PPRG(call_graph_frames) = NULL;
+
+  if (PPRG(flags) & PPROFILE_FLAGS_MEMORY_ALLOC) {
+    zend_mm_heap *heap = zend_mm_get_heap();
+
+    if (_zend_malloc || _zend_free || _zend_realloc) {
+      zend_mm_set_custom_handlers(heap, _zend_malloc, _zend_free, _zend_realloc);
+      _zend_malloc = NULL;
+      _zend_free = NULL;
+      _zend_realloc = NULL;
+    } else {
+      *((int *) heap) = 0;
+    }
   }
 }

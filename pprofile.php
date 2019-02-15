@@ -4,3 +4,5 @@ pprofile_enable();
 for( $i = 0; $i < 10; ++$i ) {
     echo "xx\n";
 }
+
+pprofile_disable();
