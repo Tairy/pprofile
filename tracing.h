@@ -164,11 +164,10 @@ static zend_always_inline int tracing_enter_frame_call_graph(zend_string *root_s
 static zend_always_inline void tracing_exit_frame_call_graph(TSRMLS_D) {
   pprofile_frame_t *current_frame = PPRG(call_graph_frames);
   pprofile_frame_t *previous = current_frame->prev_frame;
-
   zend_long duration = time_milliseconds() - current_frame->wt_start;
+
   zend_ulong key = tracing_call_graph_bucket_key(current_frame);
   unsigned int slot = (unsigned int) key % PPROFILE_CALL_GRAPH_SLOTS;
-
   pprofile_call_graph_bucket_t *bucket = PPRG(call_graph_buckets)[slot];
 
   bucket = tracing_call_graph_bucket_find(bucket, current_frame, previous, key);

@@ -1,12 +1,12 @@
 /* pprofile extension for PHP */
 
 #ifndef PHP_PPROFILE_H
-# define PHP_PPROFILE_H
+#define PHP_PPROFILE_H
 
 extern zend_module_entry pprofile_module_entry;
-# define phpext_pprofile_ptr &pprofile_module_entry
+#define phpext_pprofile_ptr &pprofile_module_entry
 
-# define PHP_PPROFILE_VERSION "0.1.0"
+#define PHP_PPROFILE_VERSION "0.1.0"
 #define PPROFILE_CALL_GRAPH_COUNTER_SIZE 1024
 #define PPROFILE_CALL_GRAPH_SLOTS 8192
 #define PPROFILE_CLOCK_CGT 0

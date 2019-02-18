@@ -1,8 +1,12 @@
 <?php
-pprofile_enable();
+function main() {
+    pprofile_enable();
 
-for( $i = 0; $i < 10; ++$i ) {
-    echo "xx\n";
+    for( $i = 0; $i < 10; ++$i ) {
+        echo "xx\n";
+    }
+
+    pprofile_disable();
 }
 
-pprofile_disable();
+main();
