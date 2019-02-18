@@ -19,16 +19,16 @@
 #define PPROFILE_FLAGS_NO_BUILTINS 8
 
 void tracing_call_graph_append_to_array(zval *return_value TSRMLS_DC);
-void tracing_call_graph_get_parent_child_name(pprofile_call_graph_bucket_t *bucket,
+void tracing_call_graph_get_parent_child_name(pprofile_call_graph_bucket *bucket,
                                               char *symbol,
                                               size_t symbol_len
                                               TSRMLS_DC);
 zend_ulong tracing_call_graph_bucket_key(pprofile_frame_t *frame);
-pprofile_call_graph_bucket_t *tracing_call_graph_bucket_find(pprofile_call_graph_bucket_t *bucket,
-                                                             pprofile_frame_t *current_frame,
-                                                             pprofile_frame_t *previous,
-                                                             zend_long key);
-void tracing_call_graph_bucket_free(pprofile_call_graph_bucket_t *bucket);
+pprofile_call_graph_bucket *tracing_call_graph_bucket_find(pprofile_call_graph_bucket *bucket,
+                                                           pprofile_frame_t *current_frame,
+                                                           pprofile_frame_t *previous,
+                                                           zend_long key);
+void tracing_call_graph_bucket_free(pprofile_call_graph_bucket *bucket);
 void tracing_begin(zend_long flags TSRMLS_CC);
 void tracing_end(TSRMLS_D);
 void tracing_enter_root_frame(TSRMLS_D);
@@ -103,9 +103,9 @@ static zend_always_inline zend_string *tracing_get_function_name(zend_execute_da
 static zend_always_inline int tracing_enter_frame_call_graph(zend_string *root_symbol,
                                                              zend_execute_data *execute_data
                                                              TSRMLS_DC) {
+
   zend_string * function_name =
       (root_symbol != NULL) ? zend_string_copy(root_symbol) : tracing_get_function_name(execute_data TSRMLS_CC);
-
   pprofile_frame_t *current_frame;
   pprofile_frame_t *p;
   int recurse_level = 0;
@@ -166,12 +166,12 @@ static zend_always_inline void tracing_exit_frame_call_graph(TSRMLS_D) {
 
   zend_ulong key = tracing_call_graph_bucket_key(current_frame);
   unsigned int slot = (unsigned int) key % PPROFILE_CALL_GRAPH_SLOTS;
-  pprofile_call_graph_bucket_t *bucket = PPRG(call_graph_buckets)[slot];
+  pprofile_call_graph_bucket *bucket = PPRG(call_graph_buckets)[slot];
 
   bucket = tracing_call_graph_bucket_find(bucket, current_frame, previous, key);
 
   if (bucket == NULL) {
-    bucket = emalloc(sizeof(pprofile_call_graph_bucket_t));
+    bucket = emalloc(sizeof(pprofile_call_graph_bucket));
     bucket->key = key;
     bucket->child_class = current_frame->class_name ? zend_string_copy(current_frame->class_name) : NULL;
     bucket->child_function = zend_string_copy(current_frame->function_name);

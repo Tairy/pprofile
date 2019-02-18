@@ -91,7 +91,7 @@ PHP_MINIT_FUNCTION (pprofile) {
 
 PHP_RSHUTDOWN_FUNCTION (pprofile) {
   int i = 0;
-  pprofile_call_graph_bucket_t *bucket;
+  pprofile_call_graph_bucket *bucket;
 
   tracing_end(TSRMLS_C);
 

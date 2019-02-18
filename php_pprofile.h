@@ -29,9 +29,8 @@ typedef unsigned int uint32;
 #endif
 
 typedef struct pprofile_frame_t pprofile_frame_t;
-typedef struct pprofile_call_graph_bucket_t pprofile_call_graph_bucket_t;
 
-struct pprofile_call_graph_bucket_t {
+typedef struct pprofile_call_graph_bucket_t {
   zend_ulong key;
   zend_string *parent_class;
   zend_string *parent_function;
@@ -39,7 +38,7 @@ struct pprofile_call_graph_bucket_t {
   zend_string *child_class;
   zend_string *child_function;
   int child_recurse_level;
-  pprofile_call_graph_bucket_t *next;
+  struct pprofile_call_graph_bucket_t *next;
   zend_long count;
   zend_long wall_time;
   zend_long cpu_time;
@@ -47,7 +46,7 @@ struct pprofile_call_graph_bucket_t {
   zend_long memory_peak;
   long int num_alloc, num_free;
   long int amount_alloc;
-};
+} pprofile_call_graph_bucket;
 
 /**
  * 运行时帧结构体
@@ -78,7 +77,7 @@ ZEND_BEGIN_MODULE_GLOBALS(pprofile)
   pprofile_frame_t *call_graph_frames;
   pprofile_frame_t *frame_free_list;
   zend_ulong function_hash_counters[PPROFILE_CALL_GRAPH_COUNTER_SIZE];
-  pprofile_call_graph_bucket_t *call_graph_buckets[PPROFILE_CALL_GRAPH_SLOTS];
+  pprofile_call_graph_bucket *call_graph_buckets[PPROFILE_CALL_GRAPH_SLOTS];
   long int num_alloc;
   long int num_free;
   long int amount_alloc;
