@@ -142,22 +142,22 @@ zend_ulong tracing_call_graph_bucket_key(pprofile_frame_t *frame) {
 
   if (previous) {
     if (previous->class_name) {
-      hash = hash_int(hash, ZSTR_HASH(previous->class_name));
+      hash = hash_int(hash, (int) ZSTR_HASH(previous->class_name));
     }
 
     if (previous->function_name) {
-      hash = hash_int(hash, ZSTR_HASH(previous->function_name));
+      hash = hash_int(hash, (int) ZSTR_HASH(previous->function_name));
     }
 
     hash += previous->recurse_level;
   }
 
   if (frame->class_name) {
-    hash = hash_int(hash, ZSTR_HASH(frame->class_name));
+    hash = hash_int(hash, (int) ZSTR_HASH(frame->class_name));
   }
 
   if (frame->function_name) {
-    hash = hash_int(hash, ZSTR_HASH(frame->function_name));
+    hash = hash_int(hash, (int) ZSTR_HASH(frame->function_name));
   }
 
   hash += frame->recurse_level;

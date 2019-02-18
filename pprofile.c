@@ -17,11 +17,6 @@ static void (*_zend_execute_internal)(zend_execute_data *execute_data, zval *ret
 ZEND_DLEXPORT void pprofile_execute_internal(zend_execute_data *execute_data, zval *return_value);
 ZEND_DLEXPORT void pprofile_execute_ex(zend_execute_data *execute_data);
 
-//PHP_INI_BEGIN()
-//  STD_PHP_INI_ENTRY("")
-//
-//PHP_INI_END()
-
 PHP_FUNCTION (pprofile_enable) {
   zend_long flags = 0;
 
@@ -45,6 +40,10 @@ PHP_GINIT_FUNCTION (pprofile) {
   pprofile_globals->root = NULL;
   pprofile_globals->call_graph_frames = NULL;
   pprofile_globals->frame_free_list = NULL;
+}
+
+PHP_MSHUTDOWN_FUNCTION (pprofile) {
+  return SUCCESS;
 }
 
 PHP_RINIT_FUNCTION (pprofile) {
@@ -164,14 +163,14 @@ static const zend_function_entry pprofile_functions[] = {
 
 zend_module_entry pprofile_module_entry = {
     STANDARD_MODULE_HEADER,
-    "pprofile",                    /* Extension name */
-    pprofile_functions,            /* zend_function_entry */
-    NULL,                            /* PHP_MINIT - Module initialization */
-    NULL,                            /* PHP_MSHUTDOWN - Module shutdown */
-    PHP_RINIT(pprofile),            /* PHP_RINIT - Request initialization */
-    NULL,                            /* PHP_RSHUTDOWN - Request shutdown */
-    PHP_MINFO(pprofile),            /* PHP_MINFO - Module info */
-    PHP_PPROFILE_VERSION,        /* Version */
+    "pprofile",
+    pprofile_functions,
+    NULL,
+    NULL,
+    PHP_RINIT(pprofile),
+    NULL,
+    PHP_MINFO(pprofile),
+    PHP_PPROFILE_VERSION,
     STANDARD_MODULE_PROPERTIES
 };
 

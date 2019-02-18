@@ -18,21 +18,20 @@
 #define PPROFILE_FLAGS_MEMORY_ALLOC_AS_MU (32|16)
 #define PPROFILE_FLAGS_NO_BUILTINS 8
 
-zend_ulong tracing_call_graph_bucket_key(pprofile_frame_t *frame);
-pprofile_call_graph_bucket_t *tracing_call_graph_bucket_find(pprofile_call_graph_bucket_t *bucket,
-                                                             pprofile_frame_t *current_frame,
-                                                             pprofile_frame_t *previous,
-                                                             zend_long key);
 void tracing_call_graph_append_to_array(zval *return_value TSRMLS_DC);
 void tracing_call_graph_get_parent_child_name(pprofile_call_graph_bucket_t *bucket,
                                               char *symbol,
                                               size_t symbol_len
                                               TSRMLS_DC);
+zend_ulong tracing_call_graph_bucket_key(pprofile_frame_t *frame);
+pprofile_call_graph_bucket_t *tracing_call_graph_bucket_find(pprofile_call_graph_bucket_t *bucket,
+                                                             pprofile_frame_t *current_frame,
+                                                             pprofile_frame_t *previous,
+                                                             zend_long key);
 void tracing_call_graph_bucket_free(pprofile_call_graph_bucket_t *bucket);
 void tracing_begin(zend_long flags TSRMLS_CC);
-void tracing_enter_root_frame(TSRMLS_D);
 void tracing_end(TSRMLS_D);
-
+void tracing_enter_root_frame(TSRMLS_D);
 void tracing_request_init(TSRMLS_D);
 void tracing_request_shutdown();
 void tracing_determine_clock_source();
@@ -109,7 +108,6 @@ static zend_always_inline int tracing_enter_frame_call_graph(zend_string *root_s
 
   pprofile_frame_t *current_frame;
   pprofile_frame_t *p;
-
   int recurse_level = 0;
 
   if (function_name == NULL) {
@@ -140,7 +138,7 @@ static zend_always_inline int tracing_enter_frame_call_graph(zend_string *root_s
   current_frame->num_free = PPRG(num_free);
   current_frame->amount_alloc = PPRG(amount_alloc);
 
-  current_frame->hash_code = ZSTR_HASH(function_name) & PPROFILE_CALL_GRAPH_COUNTER_SIZE;
+  current_frame->hash_code = ZSTR_HASH(function_name) % PPROFILE_CALL_GRAPH_COUNTER_SIZE;
   PPRG(call_graph_frames) = current_frame;
 
   if (PPRG(function_hash_counters)[current_frame->hash_code] > 0) {
@@ -194,6 +192,7 @@ static zend_always_inline void tracing_exit_frame_call_graph(TSRMLS_D) {
     bucket->memory = 0;
     bucket->memory_peak = 0;
     bucket->num_free = 0;
+    bucket->num_alloc = 0;
     bucket->amount_alloc = 0;
     bucket->child_recurse_level = current_frame->recurse_level;
     bucket->next = PPRG(call_graph_buckets)[slot];

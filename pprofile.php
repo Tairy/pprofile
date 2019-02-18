@@ -6,7 +6,8 @@ function main() {
         echo "xx\n";
     }
 
-    pprofile_disable();
+    echo json_encode(pprofile_disable());
+    // pprofile_disable();
 }
 
 main();

@@ -82,7 +82,6 @@ ZEND_BEGIN_MODULE_GLOBALS(pprofile)
   long int num_alloc;
   long int num_free;
   long int amount_alloc;
-
 ZEND_END_MODULE_GLOBALS(pprofile)
 
 #endif    /* PHP_PPROFILE_H */
