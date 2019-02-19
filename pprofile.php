@@ -7,7 +7,6 @@ function main() {
     }
 
     echo json_encode(pprofile_disable());
-    // pprofile_disable();
 }
 
 main();

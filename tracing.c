@@ -51,26 +51,28 @@ void tracing_enter_root_frame(TSRMLS_D) {
 
 void tracing_end(TSRMLS_D) {
   if (PPRG(enabled) == 1) {
-    zend_string_release(PPRG(root));
-  }
+    if (PPRG(root)) {
+      zend_string_release(PPRG(root));
+    }
 
-  while (PPRG(call_graph_frames)) {
-    tracing_exit_frame_call_graph(TSRMLS_C);
-  }
+    while (PPRG(call_graph_frames)) {
+      tracing_exit_frame_call_graph(TSRMLS_C);
+    }
 
-  PPRG(enabled) = 0;
-  PPRG(call_graph_frames) = NULL;
+    PPRG(enabled) = 0;
+    PPRG(call_graph_frames) = NULL;
 
-  if (PPRG(flags) & PPROFILE_FLAGS_MEMORY_ALLOC) {
-    zend_mm_heap *heap = zend_mm_get_heap();
+    if (PPRG(flags) & PPROFILE_FLAGS_MEMORY_ALLOC) {
+      zend_mm_heap *heap = zend_mm_get_heap();
 
-    if (_zend_malloc || _zend_free || _zend_realloc) {
-      zend_mm_set_custom_handlers(heap, _zend_malloc, _zend_free, _zend_realloc);
-      _zend_malloc = NULL;
-      _zend_free = NULL;
-      _zend_realloc = NULL;
-    } else {
-      *((int *) heap) = 0;
+      if (_zend_malloc || _zend_free || _zend_realloc) {
+        zend_mm_set_custom_handlers(heap, _zend_malloc, _zend_free, _zend_realloc);
+        _zend_malloc = NULL;
+        _zend_free = NULL;
+        _zend_realloc = NULL;
+      } else {
+        *((int *) heap) = 0;
+      }
     }
   }
 }
@@ -96,9 +98,9 @@ void tracing_call_graph_bucket_free(pprofile_call_graph_bucket *bucket) {
 }
 
 pprofile_call_graph_bucket *tracing_call_graph_bucket_find(pprofile_call_graph_bucket *bucket,
-                                                             pprofile_frame_t *current_frame,
-                                                             pprofile_frame_t *previous,
-                                                             zend_long key) {
+                                                           pprofile_frame_t *current_frame,
+                                                           pprofile_frame_t *previous,
+                                                           zend_long key) {
   while (bucket) {
     if (bucket->key == key &&
         bucket->child_recurse_level == current_frame->recurse_level &&

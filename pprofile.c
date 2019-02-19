@@ -119,7 +119,7 @@ PHP_MINFO_FUNCTION (pprofile) {
 ZEND_DLEXPORT void pprofile_execute_internal(zend_execute_data *execute_data, zval *return_value) {
   int is_profiling = 1;
 
-  if (PPRG(enabled) || (PPRG(flags) & PPROFILE_FLAGS_NO_BUILTINS) > 0) {
+  if (!PPRG(enabled) || (PPRG(flags) & PPROFILE_FLAGS_NO_BUILTINS) > 0) {
     execute_internal(execute_data, return_value TSRMLS_CC);
     return;
   }
@@ -165,13 +165,17 @@ zend_module_entry pprofile_module_entry = {
     STANDARD_MODULE_HEADER,
     "pprofile",
     pprofile_functions,
-    NULL,
-    NULL,
+    PHP_MINIT(pprofile),
+    PHP_MSHUTDOWN(pprofile),
     PHP_RINIT(pprofile),
-    NULL,
+    PHP_RSHUTDOWN(pprofile),
     PHP_MINFO(pprofile),
     PHP_PPROFILE_VERSION,
-    STANDARD_MODULE_PROPERTIES
+    PHP_MODULE_GLOBALS(pprofile),
+    PHP_GINIT(pprofile),
+    NULL,
+    NULL,
+    STANDARD_MODULE_PROPERTIES_EX
 };
 
 #ifdef COMPILE_DL_PPROFILE
