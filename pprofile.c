@@ -11,6 +11,7 @@
 ZEND_DECLARE_MODULE_GLOBALS(pprofile)
 
 #include "tracing.h"
+#include "appender.h"
 
 static void (*_zend_execute_ex)(zend_execute_data *execute_data);
 static void (*_zend_execute_internal)(zend_execute_data *execute_data, zval *return_val);
@@ -91,7 +92,7 @@ PHP_MINIT_FUNCTION (pprofile) {
 
 PHP_RSHUTDOWN_FUNCTION (pprofile) {
   int i = 0;
-  pprofile_call_graph_bucket *bucket;
+  pprofile_call_graph_bucket_t *bucket;
 
   tracing_end(TSRMLS_C);
 

@@ -77,7 +77,7 @@ void tracing_end(TSRMLS_D) {
   }
 }
 
-void tracing_call_graph_bucket_free(pprofile_call_graph_bucket *bucket) {
+void tracing_call_graph_bucket_free(pprofile_call_graph_bucket_t *bucket) {
   if (bucket->parent_class) {
     zend_string_release(bucket->parent_class);
   }
@@ -97,7 +97,7 @@ void tracing_call_graph_bucket_free(pprofile_call_graph_bucket *bucket) {
   efree(bucket);
 }
 
-pprofile_call_graph_bucket *tracing_call_graph_bucket_find(pprofile_call_graph_bucket *bucket,
+pprofile_call_graph_bucket_t *tracing_call_graph_bucket_find(pprofile_call_graph_bucket_t *bucket,
                                                            pprofile_frame_t *current_frame,
                                                            pprofile_frame_t *previous,
                                                            zend_long key) {
@@ -167,7 +167,7 @@ zend_ulong tracing_call_graph_bucket_key(pprofile_frame_t *frame) {
   return hash;
 }
 
-void tracing_call_graph_get_parent_child_name(pprofile_call_graph_bucket *bucket,
+void tracing_call_graph_get_parent_child_name(pprofile_call_graph_bucket_t *bucket,
                                               char *symbol,
                                               size_t symbol_len
                                               TSRMLS_DC) {
@@ -216,7 +216,7 @@ void tracing_call_graph_get_parent_child_name(pprofile_call_graph_bucket *bucket
 void tracing_call_graph_append_to_array(zval *return_value TSRMLS_DC) {
   int i = 0;
 
-  pprofile_call_graph_bucket *bucket;
+  pprofile_call_graph_bucket_t *bucket;
   char symbol[512] = "";
   zval
   stats_zv, *stats = &stats_zv;
