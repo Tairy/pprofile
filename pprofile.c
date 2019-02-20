@@ -18,7 +18,7 @@ static void (*_zend_execute_internal)(zend_execute_data *execute_data, zval *ret
 ZEND_DLEXPORT void pprofile_execute_internal(zend_execute_data *execute_data, zval *return_value);
 ZEND_DLEXPORT void pprofile_execute_ex(zend_execute_data *execute_data);
 
-PHP_FUNCTION (pprofile_enable) {
+PHP_FUNCTION (pprofile_start) {
   zend_long flags = 0;
 
   if (zend_parse_parameters(ZEND_NUM_ARGS () TSRMLS_CC, "|l", &flags) == FAILURE) {
@@ -29,7 +29,7 @@ PHP_FUNCTION (pprofile_enable) {
   tracing_enter_root_frame(TSRMLS_C);
 }
 
-PHP_FUNCTION (pprofile_disable) {
+PHP_FUNCTION (pprofile_end) {
   tracing_end(TSRMLS_C);
 
   array_init(return_value);
@@ -125,14 +125,17 @@ ZEND_DLEXPORT void pprofile_execute_internal(zend_execute_data *execute_data, zv
     return;
   }
 
+  // 开始执行一个函数，记录起始值
   is_profiling = tracing_enter_frame_call_graph(NULL, execute_data TSRMLS_CC);
 
+  // 执行函数
   if (!_zend_execute_internal) {
     execute_internal(execute_data, return_value TSRMLS_CC);
   } else {
     _zend_execute_internal(execute_data, return_value TSRMLS_CC);
   }
 
+  // 结束执行，记录结束值
   if (is_profiling == 1 && PPRG(call_graph_frames)) {
     tracing_exit_frame_call_graph(TSRMLS_C);
   }
@@ -157,8 +160,8 @@ ZEND_DLEXPORT void pprofile_execute_ex(zend_execute_data *execute_data) {
 }
 
 static const zend_function_entry pprofile_functions[] = {
-    PHP_FE(pprofile_enable, NULL)
-    PHP_FE(pprofile_disable, NULL)
+    PHP_FE(pprofile_start, NULL)
+    PHP_FE(pprofile_end, NULL)
     PHP_FE_END
 };
 

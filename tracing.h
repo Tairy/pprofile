@@ -190,28 +190,17 @@ zend_always_inline static void tracing_exit_frame_call_graph(TSRMLS_D) {
 
   bucket->count++;
   bucket->wall_time += duration;
-
   bucket->num_alloc += PPRG(num_alloc) - current_frame->num_alloc;
   bucket->num_free += PPRG(num_free) - current_frame->num_free;
   bucket->amount_alloc += PPRG(amount_alloc) - current_frame->amount_alloc;
-
-  if (PPRG(flags) & PPROFILE_FLAGS_CPU) {
-    bucket->cpu_time += (cpu_timer() - current_frame->cpu_start);
-  }
-
-  if (PPRG(flags) & PPROFILE_FLAGS_MEMORY_MU) {
-    bucket->memory += (zend_memory_usage(0 TSRMLS_CC) - current_frame->mu_start);
-  }
-
-  if (PPRG(flags) & PPROFILE_FLAGS_MEMORY_PMU) {
-    bucket->memory_peak += (zend_memory_peak_usage(0 TSRMLS_CC) - current_frame->pmu_start);
-  }
+  bucket->cpu_time += (cpu_timer() - current_frame->cpu_start);
+  bucket->memory += (zend_memory_usage(0 TSRMLS_CC) - current_frame->mu_start);
+  bucket->memory_peak += (zend_memory_peak_usage(0 TSRMLS_CC) - current_frame->pmu_start);
 
   PPRG(function_hash_counters)[current_frame->hash_code]--;
 
   PPRG(call_graph_frames) = PPRG(call_graph_frames)->prev_frame;
   tracing_fast_free_frame(current_frame TSRMLS_CC);
 }
-
 
 #endif //PPROFILE_TRACING_H

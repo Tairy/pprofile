@@ -8,13 +8,13 @@ function test() {
    echo test1();
 }
 function eee() {
-    pprofile_enable(PPROFILE_FLAGS_MEMORY_ALLOC | PPROFILE_FLAGS_CPU);
+    pprofile_start();
 
     for( $i = 0; $i < 10; ++$i ) {
         test();
     }
 
-    echo json_encode(pprofile_disable());
+    echo json_encode(pprofile_end());
 }
 
 eee();
