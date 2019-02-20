@@ -16,6 +16,8 @@ extern zend_module_entry pprofile_module_entry;
 #define PPROFILE_CLOCK_QPC 4
 #define PPROFILE_CLOCK_NONE 255
 
+#define PPRG(v) ZEND_MODULE_GLOBALS_ACCESSOR(pprofile, v)
+
 # if defined(ZTS) && defined(COMPILE_DL_PPROFILE)
 ZEND_TSRMLS_CACHE_EXTERN()
 # endif
@@ -93,6 +95,8 @@ ZEND_BEGIN_MODULE_GLOBALS(pprofile)
   long int num_alloc;
   long int num_free;
   long int amount_alloc;
+
+  struct pprofile_logger_entry_t *last_logger;
 ZEND_END_MODULE_GLOBALS(pprofile)
 
 #endif    /* PHP_PPROFILE_H */

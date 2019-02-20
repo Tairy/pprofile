@@ -9,13 +9,19 @@
 #include "php.h"
 #include "php_pprofile.h"
 
-static int appender_handle_udp_tcp(char *message,
-                                   int message_len,
-                                   char *level,
-                                   int level_int,
-                                   pprofile_logger_entry_t *logger,
-                                   zend_class_entry *ce TSRMLS_DC) {
-//  char *log_info, *log_context, time_RFC3339;
-//  int log_len, log_context_len, PRI;
+extern ZEND_DECLARE_MODULE_GLOBALS(pprofile);
+
+#include "appender.h"
+
+static zend_always_inline int appender_handle_udp_tcp(pprofile_logger_entry_t *logger,
+                                                      zend_class_entry *ce TSRMLS_DC) {
+}
+
+zend_always_inline pprofile_log_ex(int argc, char *message, int message_len, zend_class_entry *ce TSRMLS_DC) {
+  pprofile_logger_entry_t *logger;
+
+  logger = PPRG(last_logger);
+
+  return appender_handle_udp_tcp(logger, ce);
 }
 
