@@ -30,6 +30,14 @@ typedef unsigned long long uint64;
 typedef unsigned int uint32;
 #endif
 
+# define PPROFILE_ARRAY_DESTROY(arr) \
+  do { \
+    if (IS_ARRAY == Z_TYPE(arr)) { \
+      zval_ptr_dtor(&(arr)); \
+      ZVAL_NULL(&(arr)); \
+    } \
+  } while(0)
+
 typedef struct pprofile_frame_t pprofile_frame_t;
 typedef struct pprofile_call_graph_bucket_t pprofile_call_graph_bucket_t;
 typedef struct pprofile_logger_entry_t pprofile_logger_entry_t;
@@ -96,7 +104,8 @@ ZEND_BEGIN_MODULE_GLOBALS(pprofile)
   long int num_free;
   long int amount_alloc;
 
-  struct pprofile_logger_entry_t *last_logger;
+  pprofile_logger_entry_t *last_logger;
+  zval logger_list;
 ZEND_END_MODULE_GLOBALS(pprofile)
 
 #endif    /* PHP_PPROFILE_H */

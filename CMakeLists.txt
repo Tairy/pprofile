@@ -10,7 +10,9 @@ set(SOURCE_FILES
         tracing.c
         appender.c
         appender.h
-        timer.h appender.h appender.c)
+        logger.c
+        logger.h
+        timer.h)
 
 add_executable(pprofile ${SOURCE_FILES})
 

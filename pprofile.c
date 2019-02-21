@@ -12,6 +12,7 @@ ZEND_DECLARE_MODULE_GLOBALS(pprofile)
 
 #include "tracing.h"
 #include "appender.h"
+#include "logger.h"
 
 static void (*_zend_execute_ex)(zend_execute_data *execute_data);
 static void (*_zend_execute_internal)(zend_execute_data *execute_data, zval *return_val);
@@ -54,6 +55,9 @@ PHP_RINIT_FUNCTION (pprofile) {
 
   tracing_request_init(TSRMLS_C);
   tracing_determine_clock_source(TSRMLS_C);
+
+  pprofile_init_logger(TSRMLS_C);
+  pprofile_init_logger_list(TSRMLS_C);
 
   return SUCCESS;
 }
@@ -107,6 +111,9 @@ PHP_RSHUTDOWN_FUNCTION (pprofile) {
   }
 
   tracing_request_shutdown();
+
+  pprofile_free_logger(TSRMLS_C);
+  pprofile_free_logger_list(TSRMLS_C);
 
   return SUCCESS;
 }
