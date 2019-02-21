@@ -8,5 +8,5 @@ if test "$PHP_PPROFILE" != "no"; then
   PHP_PPROFILE_CFLAGS="-DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 $MAINTAINER_CFLAGS $STD_CFLAGS"
   PHP_SUBST([LIBS])
 
-  PHP_NEW_EXTENSION(pprofile, pprofile.c tracing.c appender.c, $ext_shared,, $PHP_PPROFILE_CFLAGS)
+  PHP_NEW_EXTENSION(pprofile, pprofile.c appender.c tracing.c logger.c, $ext_shared,, $PHP_PPROFILE_CFLAGS)
 fi

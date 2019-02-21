@@ -13,15 +13,7 @@ extern ZEND_DECLARE_MODULE_GLOBALS(pprofile);
 
 #include "appender.h"
 
-static zend_always_inline int appender_handle_udp_tcp(pprofile_logger_entry_t *logger,
-                                                      zend_class_entry *ce TSRMLS_DC) {
-}
-
-zend_always_inline pprofile_log_ex(int argc, char *message, int message_len, zend_class_entry *ce TSRMLS_DC) {
-  pprofile_logger_entry_t *logger;
-
-  logger = PPRG(last_logger);
-
-  return appender_handle_udp_tcp(logger, ce);
+zend_always_inline void pprofile_log_ex(zval *log_info) {
+  php_printf(log_info);
 }
 
