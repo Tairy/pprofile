@@ -41,6 +41,7 @@ typedef unsigned int uint32;
 typedef struct pprofile_frame_t pprofile_frame_t;
 typedef struct pprofile_call_graph_bucket_t pprofile_call_graph_bucket_t;
 typedef struct pprofile_logger_entry_t pprofile_logger_entry_t;
+typedef struct pprofile_stream_entry_t pprofile_stream_entry_t;
 
 struct pprofile_call_graph_bucket_t {
   zend_ulong key;
@@ -87,6 +88,14 @@ struct pprofile_logger_entry_t {
   int access;
 };
 
+struct pprofile_stream_entry_t {
+  char *opt;
+  int opt_len;
+  ulong stream_entry_hash;
+  php_stream *stream;
+  int can_delete;
+};
+
 ZEND_BEGIN_MODULE_GLOBALS(pprofile)
   int enabled;
   zend_long flags;
@@ -106,6 +115,7 @@ ZEND_BEGIN_MODULE_GLOBALS(pprofile)
 
   pprofile_logger_entry_t *last_logger;
   zval logger_list;
+  zval stream_list;
 ZEND_END_MODULE_GLOBALS(pprofile)
 
 #endif    /* PHP_PPROFILE_H */

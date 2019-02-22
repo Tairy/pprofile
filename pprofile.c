@@ -13,6 +13,7 @@ ZEND_DECLARE_MODULE_GLOBALS(pprofile)
 #include "tracing.h"
 #include "appender.h"
 #include "logger.h"
+#include "stream_wrapper.h"
 
 static void (*_zend_execute_ex)(zend_execute_data *execute_data);
 static void (*_zend_execute_internal)(zend_execute_data *execute_data, zval *return_val);
@@ -60,6 +61,8 @@ PHP_RINIT_FUNCTION (pprofile) {
 
   pprofile_init_logger(TSRMLS_C);
   pprofile_init_logger_list(TSRMLS_C);
+
+  pprofile_init_stream_list(TSRMLS_C);
 
   return SUCCESS;
 }

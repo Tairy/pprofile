@@ -14,6 +14,9 @@ function eee() {
         test();
     }
 
+    //pprofile_end();
+    echo "===";
+    echo "\n";
     echo json_encode(pprofile_end());
 }
 

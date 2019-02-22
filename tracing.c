@@ -233,7 +233,6 @@ void tracing_call_graph_append_to_array(zval *return_value TSRMLS_DC) {
       add_assoc_long(stats, "mem.na", bucket->num_alloc); // 内存分配总量
       add_assoc_long(stats, "mem.nf", bucket->num_free); // 内存释放总量
       add_assoc_long(stats, "mem.aa", bucket->amount_alloc); // 消耗内存
-//      add_assoc_long(stats, "mu", bucket->amount_alloc);
       add_assoc_long(stats, "cpu", bucket->cpu_time);
       add_assoc_long(stats, "mu", bucket->memory);
       add_assoc_long(stats, "pmu", bucket->memory_peak);

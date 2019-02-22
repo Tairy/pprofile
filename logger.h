@@ -9,4 +9,5 @@ void pprofile_init_logger(TSRMLS_D);
 void pprofile_init_logger_list(TSRMLS_D);
 void pprofile_free_logger(TSRMLS_D);
 void pprofile_free_logger_list(TSRMLS_D);
+
 #endif //PPROFILE_LOGGER_H
