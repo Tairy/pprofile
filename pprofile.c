@@ -120,6 +120,8 @@ PHP_RSHUTDOWN_FUNCTION (pprofile) {
   pprofile_free_logger(TSRMLS_C);
   pprofile_free_logger_list(TSRMLS_C);
 
+  pprofile_free_stream(PPROFILE_STREAM_LIST_DESTROY_YES, PPROFILE_CLOSE_LOGGER_STREAM_MOD_ALL, NULL TSRMLS_CC);
+
   return SUCCESS;
 }
 

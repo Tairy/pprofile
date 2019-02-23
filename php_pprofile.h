@@ -16,6 +16,15 @@ extern zend_module_entry pprofile_module_entry;
 #define PPROFILE_CLOCK_QPC 4
 #define PPROFILE_CLOCK_NONE 255
 
+#define PPROFILE_STREAM_LIST_DESTROY_YES 1
+
+#define PPROFILE_CLOSE_LOGGER_STREAM_MOD_ALL 1
+#define PPROFILE_CLOSE_LOGGER_STREAM_MOD_ASSIGN 2
+#define PPROFILE_CLOSE_LOGGER_STREAM_CAN_DELETE 3
+
+#define PPROFILE_DIR_MODE (mode_t)0777
+#define PPROFILE_FILE_MODE (mode_t)0666
+
 #define PPRG(v) ZEND_MODULE_GLOBALS_ACCESSOR(pprofile, v)
 
 # if defined(ZTS) && defined(COMPILE_DL_PPROFILE)
@@ -30,13 +39,15 @@ typedef unsigned long long uint64;
 typedef unsigned int uint32;
 #endif
 
-# define PPROFILE_ARRAY_DESTROY(arr) \
+#define PPROFILE_ARRAY_DESTROY(arr) \
   do { \
     if (IS_ARRAY == Z_TYPE(arr)) { \
       zval_ptr_dtor(&(arr)); \
       ZVAL_NULL(&(arr)); \
     } \
   } while(0)
+
+#define PPROFILE_ZEND_HASH_INDEX_ADD(ht, h, pData, nDataSize) zend_hash_index_add_ptr(ht, h, pData)
 
 typedef struct pprofile_frame_t pprofile_frame_t;
 typedef struct pprofile_call_graph_bucket_t pprofile_call_graph_bucket_t;
