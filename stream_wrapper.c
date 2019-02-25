@@ -48,7 +48,7 @@ int pprofile_free_stream(int destroy, int model, char *opt TSRMLS_DC) {
   return result;
 }
 
-php_stream *pprofile_stream_open_wrapper(char *opt TSRMLS_DC) {
+zend_always_inline php_stream *pprofile_stream_open_wrapper(char *opt TSRMLS_DC) {
   php_stream * stream = NULL;
   int first_create_file = 0;
 
@@ -69,7 +69,7 @@ php_stream *pprofile_stream_open_wrapper(char *opt TSRMLS_DC) {
   return stream;
 }
 
-php_stream *process_stream(char *opt, size_t opt_len TSRMLS_DC) {
+zend_always_inline php_stream *process_stream(char *opt, size_t opt_len TSRMLS_DC) {
   ulong stream_entry_hash;
   php_stream * stream = NULL;
   HashTable *ht_list;

@@ -31,9 +31,9 @@ void pprofile_free_logger(TSRMLS_D) {
       efree(PPRG(last_logger)->logger);
     }
 
-    if (PPRG(last_logger)->logger_path) {
-      efree(PPRG(last_logger)->logger_path);
-    }
+//    if (PPRG(last_logger)->logger_path) {
+//      efree(PPRG(last_logger)->logger_path);
+//    }
 
     efree(PPRG(last_logger));
   }
