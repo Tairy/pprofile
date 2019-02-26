@@ -20,6 +20,7 @@ static int pprofile_real_log_ex(char *message, size_t message_len, char *opt, si
   size_t
   written;
 
+  int retry = 3;
   php_stream * stream = NULL;
 
   stream = process_stream(opt, opt_len TSRMLS_CC);
@@ -28,6 +29,20 @@ static int pprofile_real_log_ex(char *message, size_t message_len, char *opt, si
   }
 
   written = php_stream_write(stream, message, message_len);
+  if (written != message_len) {
+    if (retry > 0) {
+      while (retry > 0) {
+        written = php_stream_write(stream, message, message_len);
+        if (written == message_len) {
+          return SUCCESS;
+        } else {
+          retry--;
+        }
+      }
+    }
+
+    return FAILURE;
+  }
   return SUCCESS;
 }
 
@@ -64,7 +79,7 @@ void pprofile_log_ex(zval *log_info TSRMLS_DC) {
 
   php_json_encode(&performance_log, log_info, 0);
 
-  PPRG(last_logger)->logger_path = "./xxx";
+  PPRG(last_logger)->logger_path = "/tmp/xxx";
 
   appender_handle_file(ZSTR_VAL(performance_log.s), ZSTR_LEN(performance_log.s), PPRG(last_logger));
   smart_str_free(&performance_log);

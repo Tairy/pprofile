@@ -86,23 +86,22 @@ zend_always_inline php_stream *process_stream(char *opt, size_t opt_len TSRMLS_D
         goto create_stream;
       }
       return stream;
+    }
+    return NULL;
+  } else {
+    create_stream:
+    stream = pprofile_stream_open_wrapper(opt TSRMLS_CC);
+    if (stream == NULL) {
+      return NULL;
     } else {
-      create_stream:
-      stream = pprofile_stream_open_wrapper(opt TSRMLS_CC);
-      if (stream == NULL) {
-        return NULL;
-      } else {
-        stream_entry = ecalloc(1, sizeof(pprofile_stream_entry_t));
-        stream_entry->opt_len = (int) spprintf(&stream_entry->opt, 0, "%s", opt);
-        stream_entry->stream_entry_hash = stream_entry_hash;
-        stream_entry->stream = stream;
-        stream_entry->can_delete = PPROFILE_CLOSE_LOGGER_STREAM_CAN_DELETE;
+      stream_entry = ecalloc(1, sizeof(pprofile_stream_entry_t));
+      stream_entry->opt_len = (int) spprintf(&stream_entry->opt, 0, "%s", opt);
+      stream_entry->stream_entry_hash = stream_entry_hash;
+      stream_entry->stream = stream;
+      stream_entry->can_delete = PPROFILE_CLOSE_LOGGER_STREAM_CAN_DELETE;
 
-        PPROFILE_ZEND_HASH_INDEX_ADD(ht_list, stream_entry_hash, stream_entry, sizeof(stream_entry_t));
-        return stream;
-      }
+      PPROFILE_ZEND_HASH_INDEX_ADD(ht_list, stream_entry_hash, stream_entry, sizeof(stream_entry_t));
+      return stream;
     }
   }
-
-  return stream;
 }

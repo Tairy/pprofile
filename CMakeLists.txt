@@ -12,7 +12,9 @@ set(SOURCE_FILES
         appender.c
         logger.h
         logger.c
-        timer.h stream_wrapper.c stream_wrapper.h)
+        timer.h
+        stream_wrapper.c
+        stream_wrapper.h)
 
 add_executable(pprofile ${SOURCE_FILES})
 
