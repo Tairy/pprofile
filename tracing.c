@@ -30,7 +30,8 @@ void tracing_determine_clock_source(TSRMLS_D) {
 }
 
 zend_always_inline static zend_ulong hash_data(zend_ulong hash, char *data, size_t size) {
-  size_t i;
+  size_t
+  i;
 
   for (i = 0; i < size; ++i) {
     hash = hash * 33 + data[i];
@@ -65,17 +66,15 @@ void tracing_end(TSRMLS_D) {
     PPRG(enabled) = 0;
     PPRG(call_graph_frames) = NULL;
 
-    if (PPRG(flags) & PPROFILE_FLAGS_MEMORY_ALLOC) {
-      zend_mm_heap *heap = zend_mm_get_heap();
+    zend_mm_heap *heap = zend_mm_get_heap();
 
-      if (_zend_malloc || _zend_free || _zend_realloc) {
-        zend_mm_set_custom_handlers(heap, _zend_malloc, _zend_free, _zend_realloc);
-        _zend_malloc = NULL;
-        _zend_free = NULL;
-        _zend_realloc = NULL;
-      } else {
-        *((int *) heap) = 0;
-      }
+    if (_zend_malloc || _zend_free || _zend_realloc) {
+      zend_mm_set_custom_handlers(heap, _zend_malloc, _zend_free, _zend_realloc);
+      _zend_malloc = NULL;
+      _zend_free = NULL;
+      _zend_realloc = NULL;
+    } else {
+      *((int *) heap) = 0;
     }
   }
 }
@@ -230,9 +229,9 @@ void tracing_call_graph_append_to_array(zval *return_value TSRMLS_DC) {
       array_init(stats);
       add_assoc_long(stats, "ct", bucket->count); // 调用次数
       add_assoc_long(stats, "wt", bucket->wall_time); //
-      add_assoc_long(stats, "mem.na", bucket->num_alloc); // 内存分配总量
-      add_assoc_long(stats, "mem.nf", bucket->num_free); // 内存释放总量
-      add_assoc_long(stats, "mem.aa", bucket->amount_alloc); // 消耗内存
+      add_assoc_long(stats, "mem.na", bucket->num_alloc); // 内存分配次数
+      add_assoc_long(stats, "mem.nf", bucket->num_free); // 内存释放次数
+      add_assoc_long(stats, "mem.aa", bucket->amount_alloc); // 消耗内存总量
       add_assoc_long(stats, "cpu", bucket->cpu_time);
       add_assoc_long(stats, "mu", bucket->memory);
       add_assoc_long(stats, "pmu", bucket->memory_peak);
@@ -262,12 +261,10 @@ void tracing_begin(zend_long flags TSRMLS_CC) {
     PPRG(function_hash_counters)[i] = 0;
   }
 
-  if (flags & PPROFILE_FLAGS_MEMORY_ALLOC) {
-    zend_mm_heap *heap = zend_mm_get_heap();
-    // hook 内存申请函数，记录内存申请和释放次数
-    zend_mm_get_custom_handlers(heap, &_zend_malloc, &_zend_free, &_zend_realloc);
-    zend_mm_set_custom_handlers(heap, &pprofile_malloc, &pprofile_free, &pprofile_realloc);
-  }
+  zend_mm_heap *heap = zend_mm_get_heap();
+  // hook 内存申请函数，记录内存申请和释放次数
+  zend_mm_get_custom_handlers(heap, &_zend_malloc, &_zend_free, &_zend_realloc);
+  zend_mm_set_custom_handlers(heap, &pprofile_malloc, &pprofile_free, &pprofile_realloc);
 }
 
 void tracing_request_init(TSRMLS_D) {
