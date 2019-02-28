@@ -93,7 +93,7 @@ struct pprofile_logger_entry_t {
   ulong logger_hash;
   char *folder;
   char *logger;
-  int logger_len;
+  size_t logger_len;
   char *logger_path;
   int logger_path_len;
   int access;
@@ -125,6 +125,7 @@ ZEND_BEGIN_MODULE_GLOBALS(pprofile)
   long int amount_alloc;
 
   pprofile_logger_entry_t *last_logger;
+  zval buffer;
   zval logger_list;
   zval stream_list;
 ZEND_END_MODULE_GLOBALS(pprofile)

@@ -74,6 +74,22 @@ static int appender_handle_file(char *message, size_t message_len, pprofile_logg
   return SUCCESS;
 }
 
+static int appender_handle_tcp_udp(char *message, size_t message_len, pprofile_logger_entry_t *logger TSRMLS_DC) {
+  char *log_info, *log_context;
+  size_t
+  log_len, log_context_len;
+
+  log_len = spprintf(&log_info, 0, "%s", message);
+
+  if (pprofile_real_buffer_log_ex(log_info, log_len, logger->logger, logger->logger_len) == FAILURE) {
+    efree(log_info);
+    return FAILURE;
+  }
+
+  efree(log_info);
+  return SUCCESS;
+}
+
 void pprofile_log_ex(zval *log_info TSRMLS_DC) {
   smart_str performance_log = {0};
 

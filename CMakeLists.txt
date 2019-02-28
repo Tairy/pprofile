@@ -14,7 +14,7 @@ set(SOURCE_FILES
         logger.c
         timer.h
         stream_wrapper.c
-        stream_wrapper.h)
+        stream_wrapper.h buffer.c buffer.h)
 
 add_executable(pprofile ${SOURCE_FILES})
 

@@ -68,28 +68,6 @@ PHP_RINIT_FUNCTION (pprofile) {
 }
 
 PHP_MINIT_FUNCTION (pprofile) {
-  REGISTER_LONG_CONSTANT("PPROFILE_FLAGS_MEMORY",
-                         PPROFILE_FLAGS_MEMORY,
-                         CONST_CS | CONST_PERSISTENT);
-  REGISTER_LONG_CONSTANT("PPROFILE_FLAGS_MEMORY_MU",
-                         PPROFILE_FLAGS_MEMORY_MU,
-                         CONST_CS | CONST_PERSISTENT);
-  REGISTER_LONG_CONSTANT("PPROFILE_FLAGS_MEMORY_PMU",
-                         PPROFILE_FLAGS_MEMORY_PMU,
-                         CONST_CS | CONST_PERSISTENT);
-  REGISTER_LONG_CONSTANT("PPROFILE_FLAGS_CPU",
-                         PPROFILE_FLAGS_CPU,
-                         CONST_CS | CONST_PERSISTENT);
-  REGISTER_LONG_CONSTANT("PPROFILE_FLAGS_NO_BUILTINS",
-                         PPROFILE_FLAGS_NO_BUILTINS,
-                         CONST_CS | CONST_PERSISTENT);
-  REGISTER_LONG_CONSTANT("PPROFILE_FLAGS_MEMORY_ALLOC",
-                         PPROFILE_FLAGS_MEMORY_ALLOC,
-                         CONST_CS | CONST_PERSISTENT);
-  REGISTER_LONG_CONSTANT("PPROFILE_FLAGS_MEMORY_ALLOC_AS_MU",
-                         PPROFILE_FLAGS_MEMORY_ALLOC_AS_MU,
-                         CONST_CS | CONST_PERSISTENT);
-
   _zend_execute_internal = zend_execute_internal;
   zend_execute_internal = pprofile_execute_internal;
 
