@@ -30,10 +30,9 @@ void tracing_determine_clock_source(TSRMLS_D) {
 }
 
 zend_always_inline static zend_ulong hash_data(zend_ulong hash, char *data, size_t size) {
-  size_t
-  i;
+  int i;
 
-  for (i = 0; i < size; ++i) {
+  for (i = 0; i < (int) size; ++i) {
     hash = hash * 33 + data[i];
   }
 
