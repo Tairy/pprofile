@@ -25,6 +25,8 @@ extern zend_module_entry pprofile_module_entry;
 #define PPROFILE_DIR_MODE (mode_t)0777
 #define PPROFILE_FILE_MODE (mode_t)0666
 
+#define PPROFILE_CLI_KEY "cli"
+
 #define PPRG(v) ZEND_MODULE_GLOBALS_ACCESSOR(pprofile, v)
 
 # if defined(ZTS) && defined(COMPILE_DL_PPROFILE)
@@ -128,6 +130,11 @@ ZEND_BEGIN_MODULE_GLOBALS(pprofile)
   zval buffer;
   zval logger_list;
   zval stream_list;
+
+  int buffer_size;
+  zend_bool use_buffer;
+  zend_bool buffer_disabled_in_cli;
+  zend_bool enable_buffer_real;
 ZEND_END_MODULE_GLOBALS(pprofile)
 
 #endif    /* PHP_PPROFILE_H */

@@ -10,10 +10,12 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(pprofile)
 
-#include "tracing.h"
 #include "appender.h"
+#include "buffer.h"
+#include "common.h"
 #include "logger.h"
 #include "stream_wrapper.h"
+#include "tracing.h"
 
 static void (*_zend_execute_ex)(zend_execute_data *execute_data);
 static void (*_zend_execute_internal)(zend_execute_data *execute_data, zval *return_val);
@@ -73,6 +75,8 @@ PHP_MINIT_FUNCTION (pprofile) {
 
   _zend_execute_ex = zend_execute_ex;
   zend_execute_ex = pprofile_execute_ex;
+
+  pprofile_init_buffer_switch(TSRMLS_C);
 
   return SUCCESS;
 }
