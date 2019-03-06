@@ -8,6 +8,7 @@
 
 #include "php.h"
 #include "php_pprofile.h"
+#include "buffer.h"
 #include "ext/json/php_json.h"
 #include "zend_smart_str.h"
 
@@ -50,7 +51,12 @@ static int pprofile_real_buffer_log_ex(char *message,
                                        size_t message_len,
                                        char *log_file_path,
                                        size_t log_file_path_len) {
-  return pprofile_real_log_ex(message, message_len, log_file_path, log_file_path_len TSRMLS_CC);
+  if (pprofile_check_buffer_enable(TSRMLS_C)) {
+    // TODO pprofile_buffer_set
+    return SUCCESS;
+  } else {
+    return pprofile_real_log_ex(message, message_len, log_file_path, log_file_path_len TSRMLS_CC);
+  }
 }
 
 static int appender_handle_file(char *message, size_t message_len, pprofile_logger_entry_t *logger) {

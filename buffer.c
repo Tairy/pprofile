@@ -28,3 +28,20 @@ void pprofile_init_buffer_switch(TSRMLS_D) {
 int pprofile_check_buffer_enable(TSRMLS_D) {
   return SUCCESS == PPRG(enable_buffer_real);
 }
+
+int pprofile_buffer_set(char *log_info, int log_info_len) {
+  zval
+  new_array;
+  zval * _buffer_data_;
+
+  if (IS_ARRAY != Z_TYPE(PPRG(buffer))) {
+    return 0;
+  }
+
+  if (zend_hash_num_elements(Z_ARRVAL(PPRG(buffer))) < 1) {
+    array_init(&new_array);
+
+  } else {
+
+  }
+}
