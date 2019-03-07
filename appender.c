@@ -52,7 +52,7 @@ static int pprofile_real_buffer_log_ex(char *message,
                                        char *log_file_path,
                                        size_t log_file_path_len) {
   if (pprofile_check_buffer_enable(TSRMLS_C)) {
-    // TODO pprofile_buffer_set
+    pprofile_buffer_set(message, message_len, log_file_path, log_file_path_len TSRMLS_CC);
     return SUCCESS;
   } else {
     return pprofile_real_log_ex(message, message_len, log_file_path, log_file_path_len TSRMLS_CC);
@@ -81,7 +81,7 @@ static int appender_handle_file(char *message, size_t message_len, pprofile_logg
 }
 
 static int appender_handle_tcp_udp(char *message, size_t message_len, pprofile_logger_entry_t *logger TSRMLS_DC) {
-  char *log_info, *log_context;
+  char *log_info;
   size_t
   log_len, log_context_len;
 
@@ -101,9 +101,23 @@ void pprofile_log_ex(zval *log_info TSRMLS_DC) {
 
   php_json_encode(&performance_log, log_info, 0);
 
-  PPRG(last_logger)->logger_path = "/tmp/xxx";
-
-  appender_handle_file(ZSTR_VAL(performance_log.s), ZSTR_LEN(performance_log.s), PPRG(last_logger));
+  switch PPRG(appender) {
+    case PPROFILE_APPENDER_TCP:
+    case PPROFILE_APPENDER_UDP:
+      appender_handle_tcp_udp(ZSTR_VAL(performance_log.s),
+                              ZSTR_LEN(performance_log.s),
+                              PPRG(last_logger) TSRMLS_CC);
+      break;
+    case PPROFILE_APPENDER_FILE:
+    default:
+      
+      PPRG(last_logger)->logger_path = "/tmp/xxx";
+      appender_handle_file(ZSTR_VAL(performance_log.s),
+                           ZSTR_LEN(performance_log.s),
+                           PPRG(last_logger)
+                           TSRMLS_CC);\
+      break;
+  }
   smart_str_free(&performance_log);
 }
 

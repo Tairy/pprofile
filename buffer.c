@@ -83,8 +83,19 @@ int pprofile_buffer_set(char *log_info, size_t log_info_len, char *path, size_t 
     PPRG(buffer_count)++;
 
     if (PPRG(buffer_count) >= PPRG(buffer_size)) {
-
+      pprofile_shutdown_buffer(PPROFILE_BUFFER_RE_INIT_YES TSRMLS_CC);
     }
+  }
+
+  return SUCCESS;
+}
+
+void pprofile_init_buffer(TSRMLS_D) {
+  zval * z_buffer;
+
+  if (pprofile_check_buffer_enable(TSRMLS_C)) {
+    PPRG(buffer_count) = 0;
+    array_init(&PPRG(buffer));
   }
 }
 
@@ -109,6 +120,14 @@ void pprofile_shutdown_buffer(int re_init TSRMLS_DC) {
   }
 
   if (re_init == PPROFILE_BUFFER_RE_INIT_YES) {
+    pprofile_clear_buffer(TSRMLS_C);
+    pprofile_init_buffer(TSRMLS_C);
+  }
+}
 
+void pprofile_clear_buffer(TSRMLS_D) {
+  if (pprofile_check_buffer_enable(TSRMLS_C)) {
+    PPRG(buffer_count) = 0;
+    PPROFILE_ARRAY_DESTROY(PPRG(buffer));
   }
 }

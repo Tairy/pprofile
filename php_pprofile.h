@@ -22,6 +22,10 @@ extern zend_module_entry pprofile_module_entry;
 #define PPROFILE_CLOSE_LOGGER_STREAM_MOD_ASSIGN 2
 #define PPROFILE_CLOSE_LOGGER_STREAM_CAN_DELETE 3
 
+#define PPROFILE_APPENDER_FILE 1
+#define PPROFILE_APPENDER_TCP 2
+#define PPROFILE_APPENDER_UDP 3
+
 #define PPROFILE_BUFFER_RE_INIT_YES 1
 #define PPROFILE_BUFFER_RE_INIT_NO 2
 
@@ -141,6 +145,12 @@ ZEND_BEGIN_MODULE_GLOBALS(pprofile)
   zend_bool use_buffer;
   zend_bool buffer_disabled_in_cli;
   zend_bool enable_buffer_real;
+
+  int appender;
+  int appender_retry;
+  char *remote_host;
+  int remote_port;
+  int remote_timeout;
 ZEND_END_MODULE_GLOBALS(pprofile)
 
 #endif    /* PHP_PPROFILE_H */
