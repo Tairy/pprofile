@@ -22,6 +22,9 @@ extern zend_module_entry pprofile_module_entry;
 #define PPROFILE_CLOSE_LOGGER_STREAM_MOD_ASSIGN 2
 #define PPROFILE_CLOSE_LOGGER_STREAM_CAN_DELETE 3
 
+#define PPROFILE_BUFFER_RE_INIT_YES 1
+#define PPROFILE_BUFFER_RE_INIT_NO 2
+
 #define PPROFILE_DIR_MODE (mode_t)0777
 #define PPROFILE_FILE_MODE (mode_t)0666
 
@@ -50,6 +53,8 @@ typedef unsigned int uint32;
   } while(0)
 
 #define PPROFILE_ZEND_HASH_INDEX_ADD(ht, h, pData, nDataSize) zend_hash_index_add_ptr(ht, h, pData)
+#define PPROFILE_ADD_NEXT_INDEX_STRINGL(a, s, l) add_next_index_stringl(a, s, l)
+#define PPROFILE_ADD_ASSOC_ZVAL_EX(z, s, l, zn) add_assoc_zval_ex(&z, s, l, &zn)
 
 typedef struct pprofile_frame_t pprofile_frame_t;
 typedef struct pprofile_call_graph_bucket_t pprofile_call_graph_bucket_t;
@@ -132,6 +137,7 @@ ZEND_BEGIN_MODULE_GLOBALS(pprofile)
   zval stream_list;
 
   int buffer_size;
+  int buffer_count;
   zend_bool use_buffer;
   zend_bool buffer_disabled_in_cli;
   zend_bool enable_buffer_real;
