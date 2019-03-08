@@ -110,12 +110,12 @@ void pprofile_log_ex(zval *log_info TSRMLS_DC) {
       break;
     case PPROFILE_APPENDER_FILE:
     default:
-      
+
       PPRG(last_logger)->logger_path = "/tmp/xxx";
       appender_handle_file(ZSTR_VAL(performance_log.s),
                            ZSTR_LEN(performance_log.s),
                            PPRG(last_logger)
-                           TSRMLS_CC);\
+                           TSRMLS_CC);
       break;
   }
   smart_str_free(&performance_log);

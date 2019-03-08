@@ -145,6 +145,7 @@ ZEND_BEGIN_MODULE_GLOBALS(pprofile)
   zend_bool use_buffer;
   zend_bool buffer_disabled_in_cli;
   zend_bool enable_buffer_real;
+  struct timeval remote_timeout_real;
 
   int appender;
   int appender_retry;

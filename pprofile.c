@@ -17,6 +17,62 @@ ZEND_DECLARE_MODULE_GLOBALS(pprofile)
 #include "stream_wrapper.h"
 #include "tracing.h"
 
+PHP_INI_BEGIN()
+        STD_PHP_INI_BOOLEAN
+        ("pprofile.use_buffer", "0", PHP_INI_SYSTEM, OnUpdateBool, use_buffer, zend_pprofile_globals, pprofile_globals)
+        STD_PHP_INI_ENTRY("pprofile.buffer_size",
+                          "0",
+                          PHP_INI_ALL,
+                          OnUpdateLongGEZero,
+                          buffer_size,
+                          zend_pprofile_globals,
+                          pprofile_globals)
+        STD_PHP_INI_BOOLEAN("pprofile.buffer_disabled_in_cli",
+                            "0",
+                            PHP_INI_SYSTEM,
+                            OnUpdateBool,
+                            buffer_disabled_in_cli,
+                            zend_pprofile_globals,
+                            pprofile_globals)
+
+        STD_PHP_INI_ENTRY("pprofile.appender",
+                          "1",
+                          PHP_INI_SYSTEM,
+                          OnUpdateLongGEZero,
+                          appender,
+                          zend_pprofile_globals,
+                          pprofile_globals)
+        STD_PHP_INI_ENTRY("pprofile.appender_retry",
+                          "0",
+                          PHP_INI_ALL,
+                          OnUpdateLongGEZero,
+                          appender_retry,
+                          zend_pprofile_globals,
+                          pprofile_globals)
+        STD_PHP_INI_ENTRY("pprofile.remote_host",
+                          "127.0.0.1",
+                          PHP_INI_ALL,
+                          OnUpdateString,
+                          remote_host,
+                          zend_pprofile_globals,
+                          pprofile_globals)
+        STD_PHP_INI_ENTRY("pprofile.remote_port",
+                          "514",
+                          PHP_INI_ALL,
+                          OnUpdateLongGEZero,
+                          remote_port,
+                          zend_pprofile_globals,
+                          pprofile_globals)
+        STD_PHP_INI_ENTRY("pprofile.remote_timeout",
+                          "1",
+                          PHP_INI_SYSTEM,
+                          OnUpdateLongGEZero,
+                          remote_timeout,
+                          zend_pprofile_globals,
+                          pprofile_globals)
+
+PHP_INI_END()
+
 static void (*_zend_execute_ex)(zend_execute_data *execute_data);
 static void (*_zend_execute_internal)(zend_execute_data *execute_data, zval *return_val);
 ZEND_DLEXPORT void pprofile_execute_internal(zend_execute_data *execute_data, zval *return_value);
@@ -44,12 +100,15 @@ PHP_FUNCTION (pprofile_end) {
 }
 
 PHP_GINIT_FUNCTION (pprofile) {
+  memset(pprofile_globals, 0, sizeof(zend_pprofile_globals));
   pprofile_globals->root = NULL;
   pprofile_globals->call_graph_frames = NULL;
   pprofile_globals->frame_free_list = NULL;
 }
 
 PHP_MSHUTDOWN_FUNCTION (pprofile) {
+
+  UNREGISTER_INI_ENTRIES();
   return SUCCESS;
 }
 
@@ -77,6 +136,8 @@ PHP_MINIT_FUNCTION (pprofile) {
   zend_execute_ex = pprofile_execute_ex;
 
   pprofile_init_buffer_switch(TSRMLS_C);
+
+  REGISTER_INI_ENTRIES();
 
   return SUCCESS;
 }
@@ -111,6 +172,8 @@ PHP_MINFO_FUNCTION (pprofile) {
   php_info_print_table_start();
   php_info_print_table_header(2, "pprofile support", "enabled");
   php_info_print_table_end();
+
+  DISPLAY_INI_ENTRIES();
 }
 
 ZEND_DLEXPORT void pprofile_execute_internal(zend_execute_data *execute_data, zval *return_value) {

@@ -50,20 +50,66 @@ int pprofile_free_stream(int destroy, int model, char *opt TSRMLS_DC) {
 
 php_stream *pprofile_stream_open_wrapper(char *opt TSRMLS_DC) {
   php_stream * stream = NULL;
+  char *res = NULL;
   int first_create_file = 0;
 
-  if (access(opt, F_OK) != 0) {
-    first_create_file = 1;
-  }
+  size_t
+  res_len;
 
-  stream = php_stream_open_wrapper(opt, "a", IGNORE_URL_WIN, NULL);
+  switch PPRG(appender) {
+    case PPROFILE_APPENDER_TCP:
 
-  if (stream != NULL) {
-    if (first_create_file == 1) {
-      VCWD_CHMOD(opt, PPROFILE_FILE_MODE);
-    }
-  } else {
-    // TODO: 异常处理
+      res_len = spprintf(&res, 0, "tcp://%s:%d", PPRG(remote_host), PPRG(remote_port));
+      stream = php_stream_xport_create(res,
+                                       res_len,
+                                       REPORT_ERRORS,
+                                       STREAM_XPORT_CLIENT | STREAM_XPORT_CONNECT,
+                                       0,
+                                       &PPRG(remote_timeout_real),
+                                       NULL,
+                                       NULL,
+                                       NULL);
+      if (stream == NULL) {
+        efree(res);
+        return NULL;
+      }
+
+      efree(res);
+      break;
+    case PPROFILE_APPENDER_UDP:
+
+      res_len = spprintf(&res, 0, "udp://%s:%d", PPRG(remote_host), PPRG(remote_port));
+      stream = php_stream_xport_create(res,
+                                       res_len,
+                                       REPORT_ERRORS,
+                                       STREAM_XPORT_CLIENT | STREAM_XPORT_CONNECT,
+                                       0,
+                                       &PPRG(remote_timeout_real),
+                                       NULL,
+                                       NULL,
+                                       NULL);
+      if (stream == NULL) {
+        efree(res);
+        return NULL;
+      }
+
+      efree(res);
+      break;
+    case PPROFILE_APPENDER_FILE:
+    default:
+      if (access(opt, F_OK) != 0) {
+        first_create_file = 1;
+      }
+
+      stream = php_stream_open_wrapper(opt, "a", IGNORE_URL_WIN, NULL);
+
+      if (stream != NULL) {
+        if (first_create_file == 1) {
+          VCWD_CHMOD(opt, PPROFILE_FILE_MODE);
+        }
+      } else {
+        // TODO: 异常处理
+      }
   }
 
   return stream;
