@@ -1,4 +1,4 @@
-/* pprofile extension for PHP */
+/* pprofile extension for PHP (c) 2019 tairy */
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"

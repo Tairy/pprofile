@@ -36,6 +36,7 @@ extern zend_module_entry pprofile_module_entry;
 
 #define PPRG(v) ZEND_MODULE_GLOBALS_ACCESSOR(pprofile, v)
 
+
 # if defined(ZTS) && defined(COMPILE_DL_PPROFILE)
 ZEND_TSRMLS_CACHE_EXTERN()
 # endif
