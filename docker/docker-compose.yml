@@ -7,5 +7,28 @@ services:
       - pprofile
     environment:
       TZ: 'Asia/Shanghai'
+  influxdb:
+    container_name: influxdb
+    image: influxdb:latest
+    volumes:
+      - ./data:/var/lib/influxdb
+      - ./infulxdb.conf:/etc/influxdb/incluxdb.conf
+    ports:
+      - 8086:8086
+      - 8088:8088
+    networks:
+      - pprofile
+    environment:
+      TZ: 'Asia/Shanghai'
+      INFLUXDB_ADMIN_ENABLED: 'true'
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    networks:
+      - pprofile
+    ports:
+      - 3000:3000
+    environment:
+      TZ: 'Asia/Shanghai'
 networks:
   pprofile:
