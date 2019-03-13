@@ -2,10 +2,7 @@ version: '3'
 services:
   php:
     container_name: php
-    image: php:7.1.26-fpm
-    volumes:
-      - ./php.ini:/usr/local/etc/php/php.ini
-      - ../modules/pprofile.so:/usr/local/lib/php/extensions/no-debug-non-zts-20160303/pprofile.so
+    image: pprofile:latest
     networks:
       - pprofile
     environment:
