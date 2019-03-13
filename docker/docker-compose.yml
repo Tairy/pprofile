@@ -12,10 +12,10 @@ services:
     image: influxdb:latest
     volumes:
       - ./data:/var/lib/influxdb
-      - ./infulxdb.conf:/etc/influxdb/incluxdb.conf
+      - ./influxdb.conf:/etc/influxdb/influxdb.conf
     ports:
       - 8086:8086
-      - 8088:8088
+      - 8088:8088/udp
     networks:
       - pprofile
     environment:

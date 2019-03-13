@@ -96,6 +96,11 @@ static int appender_handle_tcp_udp(char *message, size_t message_len, pprofile_l
   return SUCCESS;
 }
 
+void influxdb_encode(smart_str *buf, zval *val) {
+  //pprofile,request_id=xxx,start_function="main",end_function="test" ct=10,wt=111,mem.na=1,mem.nf=0,mem.aa=128,cpu=156,mu=128,pmu=0 1552462330399000000
+
+}
+
 void pprofile_log_ex(zval *log_info TSRMLS_DC) {
   smart_str performance_log = {0};
 

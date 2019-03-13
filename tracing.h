@@ -7,7 +7,7 @@
 
 #include "timer.h"
 
-#define PPROFILE_ROOT_SYMBOL "main()"
+#define PPROFILE_ROOT_SYMBOL "main"
 #define PPROFILE_CALL_GRAPH_COUNTER_SIZE 1024
 #define PPROFILE_CALL_GRAPH_SLOTS 8192
 #define PPROFILE_FLAGS_CPU 1
