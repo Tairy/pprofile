@@ -21,8 +21,13 @@ ZEND_DECLARE_MODULE_GLOBALS(pprofile)
 #include "tracing.h"
 
 PHP_INI_BEGIN()
-        STD_PHP_INI_BOOLEAN
-        ("pprofile.use_buffer", "0", PHP_INI_SYSTEM, OnUpdateBool, use_buffer, zend_pprofile_globals, pprofile_globals)
+        STD_PHP_INI_BOOLEAN("pprofile.use_buffer",
+                            "0",
+                            PHP_INI_SYSTEM,
+                            OnUpdateBool,
+                            use_buffer,
+                            zend_pprofile_globals,
+                            pprofile_globals)
         STD_PHP_INI_ENTRY("pprofile.buffer_size",
                           "0",
                           PHP_INI_ALL,
@@ -71,6 +76,27 @@ PHP_INI_BEGIN()
                           PHP_INI_SYSTEM,
                           OnUpdateLongGEZero,
                           remote_timeout,
+                          zend_pprofile_globals,
+                          pprofile_globals)
+        STD_PHP_INI_ENTRY("pprofile.data_center_id",
+                          "0",
+                          PHP_INI_ALL,
+                          OnUpdateLongGEZero,
+                          data_center_id,
+                          zend_pprofile_globals,
+                          pprofile_globals)
+        STD_PHP_INI_ENTRY("pprofile.worker_id",
+                          "0",
+                          PHP_INI_ALL,
+                          OnUpdateLongGEZero,
+                          worker_id,
+                          zend_pprofile_globals,
+                          pprofile_globals)
+        STD_PHP_INI_ENTRY("pprofile.twepoch",
+                          "1451606400000",
+                          PHP_INI_ALL,
+                          OnUpdateLongGEZero,
+                          twepoch,
                           zend_pprofile_globals,
                           pprofile_globals)
 
@@ -128,8 +154,8 @@ PHP_MINIT_FUNCTION (pprofile) {
 PHP_MSHUTDOWN_FUNCTION (pprofile) {
 
   UNREGISTER_INI_ENTRIES();
-
   pprofile_free_snowflake();
+
   return SUCCESS;
 }
 
@@ -143,7 +169,6 @@ PHP_RINIT_FUNCTION (pprofile) {
 
   pprofile_init_logger(TSRMLS_C);
   pprofile_init_logger_list(TSRMLS_C);
-
   pprofile_init_stream_list(TSRMLS_C);
 
   return SUCCESS;
@@ -169,7 +194,6 @@ PHP_RSHUTDOWN_FUNCTION (pprofile) {
 
   pprofile_free_logger(TSRMLS_C);
   pprofile_free_logger_list(TSRMLS_C);
-
   pprofile_free_stream(PPROFILE_STREAM_LIST_DESTROY_YES, PPROFILE_CLOSE_LOGGER_STREAM_MOD_ALL, NULL TSRMLS_CC);
 
   return SUCCESS;

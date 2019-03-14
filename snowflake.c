@@ -21,7 +21,6 @@ int pprofile_init_snowflake() {
 
   PPRG(context)->sequence = 0;
   PPRG(context)->last_ts = 0ULL;
-//  PPRG(context)->data_center_id =
 
   PPRG(context)->worker_id_bits = 5;
   PPRG(context)->data_center_id_bits = 5;
