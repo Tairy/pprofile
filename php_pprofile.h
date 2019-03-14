@@ -194,7 +194,7 @@ ZEND_BEGIN_MODULE_GLOBALS(pprofile)
   int remote_timeout;
 
   // uuid
-  pprofile_snowflake_context_t *context;
+  pprofile_snowflake_context_t *snowflake_context;
   struct pprofile_shm_t shmem;
   pid_t current_pid;
   int le_atom;

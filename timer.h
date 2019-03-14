@@ -13,28 +13,25 @@
 #include <sys/resource.h>
 
 static zend_always_inline uint64 current_timestamp() {
-  struct timeval tv;
+  struct timeval now;
 
-  if (gettimeofday(&tv, NULL)) {
+  if (gettimeofday(&now, NULL) == -1) {
     php_error(E_ERROR, "gettimeofday error.");
-    return 0;
+    return 0ULL;
   }
 
-  return 1000 * (uint64) tv.tv_sec + (uint64) tv.tv_usec / 1000;
+  return (uint64) now.tv_sec * 1000ULL + (uint64) now.tv_usec / 1000ULL;
 }
 
-// TODO：这个函数需要调试
-static zend_always_inline uint64 time_milliseconds() {
-  struct timespec s;
-  uint32 a, d;
-  uint64 val;
-
+static zend_always_inline uint64 current_time_milliseconds() {
   struct timeval now;
-  if (gettimeofday(&now, NULL) == 0) {
-    return (uint64) (now.tv_sec * 1000000 + now.tv_usec);
+
+  if (gettimeofday(&now, NULL) == -1) {
+    php_error(E_ERROR, "gettimeofday error.");
+    return 0ULL;
   }
 
-  return 0;
+  return (uint64) (now.tv_sec * 1000000ULL + now.tv_usec);
 }
 
 /**
@@ -57,14 +54,14 @@ static zend_always_inline double get_timebase_factor() {
     return 0.0;
   }
 
-  tsc_start = time_milliseconds();
+  tsc_start = current_time_milliseconds();
   do {
     for (i = 0; i < 1000000; i++);
     if (gettimeofday(&end, 0)) {
       php_error(E_ERROR, "gettimeofday error.");
       return 0.0;
     }
-    tsc_end = time_milliseconds();
+    tsc_end = current_time_milliseconds();
   } while (get_us_interval(&start, &end) < 5000);
 
   return (tsc_end - tsc_start) * 1.0 / (get_us_interval(&start, &end));

@@ -128,6 +128,10 @@ PHP_FUNCTION (pprofile_end) {
   pprofile_log_ex(return_value);
 }
 
+PHP_FUNCTION (pprofile_get_uuid) {
+  get_uuid();
+}
+
 PHP_GINIT_FUNCTION (pprofile) {
   memset(pprofile_globals, 0, sizeof(zend_pprofile_globals));
   pprofile_globals->root = NULL;
@@ -170,6 +174,10 @@ PHP_RINIT_FUNCTION (pprofile) {
   pprofile_init_logger(TSRMLS_C);
   pprofile_init_logger_list(TSRMLS_C);
   pprofile_init_stream_list(TSRMLS_C);
+
+  if (PPRG(current_pid) == 0) {
+    PPRG(current_pid) = getpid();
+  }
 
   return SUCCESS;
 }
@@ -252,6 +260,7 @@ ZEND_DLEXPORT void pprofile_execute_ex(zend_execute_data *execute_data) {
 static const zend_function_entry pprofile_functions[] = {
     PHP_FE(pprofile_start, NULL)
     PHP_FE(pprofile_end, NULL)
+    PHP_FE(pprofile_get_uuid, NULL)
     PHP_FE_END
 };
 

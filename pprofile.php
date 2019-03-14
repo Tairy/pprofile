@@ -7,7 +7,7 @@ function test1() {
 function test() {
    echo test1();
 }
-function eee() {
+function main() {
     pprofile_start();
 
     for( $i = 0; $i < 10; ++$i ) {
@@ -18,6 +18,7 @@ function eee() {
     echo "===";
     echo "\n";
     echo json_encode(pprofile_end());
+    echo pprofile_get_uuid();
 }
 
-eee();
+main();

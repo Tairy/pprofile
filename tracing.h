@@ -119,7 +119,7 @@ zend_always_inline static int tracing_enter_frame_call_graph(zend_string *root_s
   current_frame->function_name = function_name;
   current_frame->prev_frame = PPRG(call_graph_frames);
   current_frame->recurse_level = 0;
-  current_frame->wt_start = time_milliseconds();
+  current_frame->wt_start = current_time_milliseconds();
   current_frame->cpu_start = cpu_timer();
   current_frame->pmu_start = zend_memory_peak_usage(0 TSRMLS_CC);
   current_frame->mu_start = zend_memory_usage(0 TSRMLS_CC);
@@ -150,7 +150,7 @@ zend_always_inline static int tracing_enter_frame_call_graph(zend_string *root_s
 zend_always_inline static void tracing_exit_frame_call_graph(TSRMLS_D) {
   pprofile_frame_t *current_frame = PPRG(call_graph_frames);
   pprofile_frame_t *previous = current_frame->prev_frame;
-  zend_long duration = time_milliseconds() - current_frame->wt_start;
+  zend_long duration = current_time_milliseconds() - current_frame->wt_start;
 
   zend_ulong key = tracing_call_graph_bucket_key(current_frame);
   unsigned int slot = (unsigned int) key % PPROFILE_CALL_GRAPH_SLOTS;

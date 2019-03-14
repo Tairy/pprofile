@@ -7,5 +7,6 @@
 
 int pprofile_init_snowflake();
 void pprofile_free_snowflake();
+uint64 get_uuid();
 
 #endif //PPROFILE_SNOWFLAKE_H

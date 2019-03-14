@@ -44,7 +44,7 @@ zend_always_inline static zend_ulong hash_int(zend_ulong hash, int data) {
 }
 
 void tracing_enter_root_frame(TSRMLS_D) {
-  PPRG(start_time) = time_milliseconds();
+  PPRG(start_time) = current_time_milliseconds();
   PPRG(start_timestamp) = current_timestamp();
   PPRG(enabled) = 1;
   PPRG(root) = zend_string_init(PPROFILE_ROOT_SYMBOL, sizeof(PPROFILE_ROOT_SYMBOL) - 1, 0);

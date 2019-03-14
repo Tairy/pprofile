@@ -13,7 +13,10 @@
 
 #ifdef MAP_ANON
 int shm_alloc(struct pprofile_shm_t *shm) {
-  shm->addr = (void *) mmap(NULL, shm->size, PROT_READ | PROT_WRITE, MAP_ANON | MAP_SHARED, -1, 0);
+  shm->addr = (void *) mmap(NULL,
+                            shm->size,
+                            PROT_READ | PROT_WRITE,
+                            MAP_ANON | MAP_SHARED, -1, 0);
   if (shm->addr == NULL) {
     return -1;
   }
