@@ -5,8 +5,6 @@
 #ifndef PPROFILE_SPINLOCK_H
 #define PPROFILE_SPINLOCK_H
 
-typedef volatile unsigned int atomic_t;
-
 void spin_init();
 void spin_lock(atomic_t *lock, int id);
 void spin_unlock(atomic_t *lock, int id);

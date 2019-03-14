@@ -14,6 +14,9 @@ ZEND_DECLARE_MODULE_GLOBALS(pprofile)
 #include "buffer.h"
 #include "common.h"
 #include "logger.h"
+#include "shm.h"
+#include "snowflake.h"
+#include "spinlock.h"
 #include "stream_wrapper.h"
 #include "tracing.h"
 
@@ -104,6 +107,7 @@ PHP_GINIT_FUNCTION (pprofile) {
   pprofile_globals->root = NULL;
   pprofile_globals->call_graph_frames = NULL;
   pprofile_globals->frame_free_list = NULL;
+  pprofile_globals->current_pid = 0;
 }
 
 PHP_MSHUTDOWN_FUNCTION (pprofile) {

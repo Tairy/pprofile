@@ -36,17 +36,24 @@ extern zend_module_entry pprofile_module_entry;
 
 #define PPRG(v) ZEND_MODULE_GLOBALS_ACCESSOR(pprofile, v)
 
-
 # if defined(ZTS) && defined(COMPILE_DL_PPROFILE)
 ZEND_TSRMLS_CACHE_EXTERN()
 # endif
 
 #if !defined(uint64)
+#ifdef __x86_64__
+typedef unsigned long uint64;
+#else
 typedef unsigned long long uint64;
+#endif
 #endif
 
 #if !defined(uint32)
 typedef unsigned int uint32;
+#endif
+
+#if !defined(atomic_t)
+typedef volatile unsigned int atomic_t;
 #endif
 
 #define PPROFILE_ARRAY_DESTROY(arr) \
@@ -65,6 +72,8 @@ typedef struct pprofile_frame_t pprofile_frame_t;
 typedef struct pprofile_call_graph_bucket_t pprofile_call_graph_bucket_t;
 typedef struct pprofile_logger_entry_t pprofile_logger_entry_t;
 typedef struct pprofile_stream_entry_t pprofile_stream_entry_t;
+typedef struct pprofile_snowflake_context_t pprofile_snowflake_context_t;
+typedef struct pprofile_shm_t pprofile_shm_t;
 
 struct pprofile_call_graph_bucket_t {
   zend_ulong key;
@@ -119,6 +128,36 @@ struct pprofile_stream_entry_t {
   int can_delete;
 };
 
+/**
+ * 雪花算法 上下文
+ */
+struct pprofile_snowflake_context_t {
+  atomic_t lock;
+
+  long sequence;
+
+  uint64 last_ts;
+  uint64 data_center_id;
+  uint64 worker_id;
+  uint64 twepoch;
+
+  unsigned char worker_id_bits;
+  unsigned char data_center_id_bits;
+  unsigned char sequence_bits;
+
+  int worker_id_shift;
+  int data_center_id_shift;
+  int timestamp_left_shift;
+
+  int sequence_mask;
+
+};
+
+struct pprofile_shm_t {
+  void *addr;
+  size_t size;
+};
+
 ZEND_BEGIN_MODULE_GLOBALS(pprofile)
   int enabled;
   zend_long flags;
@@ -153,6 +192,16 @@ ZEND_BEGIN_MODULE_GLOBALS(pprofile)
   char *remote_host;
   int remote_port;
   int remote_timeout;
+
+  // uuid
+  pprofile_snowflake_context_t *context;
+  struct pprofile_shm_t shmem;
+  pid_t current_pid;
+  int le_atom;
+  uint64 data_center_id;
+  uint64 worker_id;
+  uint64 twepoch;
+
 ZEND_END_MODULE_GLOBALS(pprofile)
 
 #endif    /* PHP_PPROFILE_H */

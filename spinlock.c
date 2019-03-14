@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sched.h>
+#include "php.h"
+#include "php_pprofile.h"
 #include "spinlock.h"
 
 static long ncpu;
