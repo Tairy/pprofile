@@ -110,9 +110,26 @@ PHP_GINIT_FUNCTION (pprofile) {
   pprofile_globals->current_pid = 0;
 }
 
+PHP_MINIT_FUNCTION (pprofile) {
+  _zend_execute_internal = zend_execute_internal;
+  zend_execute_internal = pprofile_execute_internal;
+
+  _zend_execute_ex = zend_execute_ex;
+  zend_execute_ex = pprofile_execute_ex;
+
+  pprofile_init_snowflake();
+  pprofile_init_buffer_switch(TSRMLS_C);
+
+  REGISTER_INI_ENTRIES();
+
+  return SUCCESS;
+}
+
 PHP_MSHUTDOWN_FUNCTION (pprofile) {
 
   UNREGISTER_INI_ENTRIES();
+
+  pprofile_free_snowflake();
   return SUCCESS;
 }
 
@@ -128,20 +145,6 @@ PHP_RINIT_FUNCTION (pprofile) {
   pprofile_init_logger_list(TSRMLS_C);
 
   pprofile_init_stream_list(TSRMLS_C);
-
-  return SUCCESS;
-}
-
-PHP_MINIT_FUNCTION (pprofile) {
-  _zend_execute_internal = zend_execute_internal;
-  zend_execute_internal = pprofile_execute_internal;
-
-  _zend_execute_ex = zend_execute_ex;
-  zend_execute_ex = pprofile_execute_ex;
-
-  pprofile_init_buffer_switch(TSRMLS_C);
-
-  REGISTER_INI_ENTRIES();
 
   return SUCCESS;
 }
