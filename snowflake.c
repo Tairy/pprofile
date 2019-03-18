@@ -4,12 +4,12 @@
 
 #include "php.h"
 #include "php_pprofile.h"
+extern ZEND_DECLARE_MODULE_GLOBALS(pprofile);
+
 #include "shm.h"
 #include "snowflake.h"
 #include "spinlock.h"
 #include "timer.h"
-
-extern ZEND_DECLARE_MODULE_GLOBALS(pprofile);
 
 int pprofile_init_snowflake() {
   PPRG(shmem).size = sizeof(struct pprofile_snowflake_context_t);
@@ -66,7 +66,8 @@ uint64 get_uuid() {
   spin_lock(&PPRG(snowflake_context)->lock, (int) PPRG(current_pid));
 
   if (PPRG(snowflake_context)->last_ts == current) {
-    PPRG(snowflake_context)->sequence = (PPRG(snowflake_context)->sequence + 1) & PPRG(snowflake_context)->sequence_mask;
+    PPRG(snowflake_context)->sequence =
+        (PPRG(snowflake_context)->sequence + 1) & PPRG(snowflake_context)->sequence_mask;
     if (PPRG(snowflake_context)->sequence == 0) {
       current = skip_next_millis(PPRG(snowflake_context)->last_ts);
     }

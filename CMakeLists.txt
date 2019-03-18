@@ -14,7 +14,17 @@ set(SOURCE_FILES
         logger.c
         timer.h
         stream_wrapper.c
-        stream_wrapper.h buffer.c buffer.h common.c common.h spinlock.c spinlock.h shm.c shm.h snowflake.c snowflake.h)
+        stream_wrapper.h
+        buffer.c
+        buffer.h
+        common.c
+        common.h
+        spinlock.c
+        spinlock.h
+        shm.c
+        shm.h
+        snowflake.c
+        snowflake.h)
 
 add_executable(pprofile ${SOURCE_FILES})
 

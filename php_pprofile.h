@@ -150,7 +150,6 @@ struct pprofile_snowflake_context_t {
   int timestamp_left_shift;
 
   int sequence_mask;
-
 };
 
 struct pprofile_shm_t {
