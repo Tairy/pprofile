@@ -8,18 +8,15 @@ function test() {
    echo test1();
 }
 function main() {
-    //pprofile_start();
+    pprofile_start();
 
-    for( $i = 0; $i < 1000; ++$i ) {
-        //test();
-        $a = pprofile_get_uuid();
-        echo $a["result"] . "\n";
+    for( $i = 0; $i < 10; ++$i ) {
+        test();
     }
 
-    //pprofile_end();
-    //echo "===";
-    //echo "\n";
-    //echo json_encode(pprofile_end());
+    echo "===";
+    echo "\n";
+    echo json_encode(pprofile_end());
     //echo "\n";
     //echo json_encode(pprofile_get_uuid());
 }

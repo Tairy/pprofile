@@ -15,7 +15,9 @@
 extern ZEND_DECLARE_MODULE_GLOBALS(pprofile);
 
 #include "appender.h"
+#include "snowflake.h"
 #include "stream_wrapper.h"
+#include "timer.h"
 
 static int pprofile_real_log_ex(char *message, size_t message_len, char *opt, size_t opt_len TSRMLS_DC) {
   size_t
@@ -98,13 +100,49 @@ static int appender_handle_tcp_udp(char *message, size_t message_len, pprofile_l
 
 void influxdb_encode(smart_str *buf, zval *val) {
   //pprofile,request_id=xxx,start_function="main",end_function="test" ct=10,wt=111,mem.na=1,mem.nf=0,mem.aa=128,cpu=156,mu=128,pmu=0 1552462330399000000
+  uint64 request_id = get_uuid();
+  uint64 current_time = current_time_milliseconds();
 
+  zend_string * str_key, *entry_str_key, *trimd_content;
+  zval * entry, *e;
+//  char *content;
+
+  ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(val), str_key, entry)
+      {
+        smart_str tmp_content = {0};
+        int i = 0;
+        ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(entry), entry_str_key, e)
+            {
+              if (i == Z_ARR_P(entry)->nNumOfElements - 1) {
+                smart_str_append_printf(&tmp_content, "%s=%llu", ZSTR_VAL(entry_str_key), Z_LVAL_P(e));
+              } else {
+                smart_str_append_printf(&tmp_content, "%s=%llu,", ZSTR_VAL(entry_str_key), Z_LVAL_P(e));
+              }
+
+              i++;
+            }
+        ZEND_HASH_FOREACH_END();
+
+        smart_str_append_printf(buf,
+                                "pprofile,request_id=%lu,"
+                                "function_chain=\"%s\" "
+                                "%s "
+                                "%lu\n",
+                                request_id,
+                                ZSTR_VAL(str_key),
+                                tmp_content.s->val,
+                                current_time);
+        smart_str_0(&tmp_content);
+        smart_str_free(&tmp_content);
+      }
+  ZEND_HASH_FOREACH_END();
 }
 
 void pprofile_log_ex(zval *log_info TSRMLS_DC) {
   smart_str performance_log = {0};
 
-  php_json_encode(&performance_log, log_info, 0);
+//  php_json_encode(&performance_log, log_info, 0);
+  influxdb_encode(&performance_log, log_info);
 
   switch PPRG(appender) {
     case PPROFILE_APPENDER_TCP:
@@ -125,4 +163,3 @@ void pprofile_log_ex(zval *log_info TSRMLS_DC) {
   }
   smart_str_free(&performance_log);
 }
-
