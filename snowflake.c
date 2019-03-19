@@ -18,24 +18,24 @@ int pprofile_init_snowflake() {
     return -1;
   }
 
-  PPRG(snowflake_context) = (struct pprofile_snowflake_context_t *) PPRG(shmem).addr;
+  pprofile_globals.snowflake_context = (struct pprofile_snowflake_context_t *) pprofile_globals.shmem.addr;
 
-  PPRG(snowflake_context)->lock = 0;
-  PPRG(snowflake_context)->sequence = 0;
-  PPRG(snowflake_context)->last_ts = 0ULL;
+  pprofile_globals.snowflake_context->lock = 0;
+  pprofile_globals.snowflake_context->sequence = 0;
+  pprofile_globals.snowflake_context->last_ts = 0ULL;
 
-  PPRG(snowflake_context)->worker_id_bits = 5;
-  PPRG(snowflake_context)->data_center_id_bits = 5;
-  PPRG(snowflake_context)->sequence_bits = 12;
+  pprofile_globals.snowflake_context->worker_id_bits = 5;
+  pprofile_globals.snowflake_context->data_center_id_bits = 5;
+  pprofile_globals.snowflake_context->sequence_bits = 12;
 
-  PPRG(snowflake_context)->worker_id_shift = PPRG(snowflake_context)->sequence_bits;
-  PPRG(snowflake_context)->data_center_id_shift = PPRG(snowflake_context)->sequence_bits
-      + PPRG(snowflake_context)->worker_id_bits;
-  PPRG(snowflake_context)->timestamp_left_shift = PPRG(snowflake_context)->sequence_bits
-      + PPRG(snowflake_context)->worker_id_bits
-      + PPRG(snowflake_context)->data_center_id_bits;
+  pprofile_globals.snowflake_context->worker_id_shift = pprofile_globals.snowflake_context->sequence_bits;
+  pprofile_globals.snowflake_context->data_center_id_shift = pprofile_globals.snowflake_context->sequence_bits
+      + pprofile_globals.snowflake_context->worker_id_bits;
+  pprofile_globals.snowflake_context->timestamp_left_shift = pprofile_globals.snowflake_context->sequence_bits
+      + pprofile_globals.snowflake_context->worker_id_bits
+      + pprofile_globals.snowflake_context->data_center_id_bits;
 
-  PPRG(snowflake_context)->sequence_mask = -1 ^ (-1 << PPRG(snowflake_context)->data_center_id_bits);
+  pprofile_globals.snowflake_context->sequence_mask = -1 ^ (-1 << pprofile_globals.snowflake_context->data_center_id_bits);
 
   spin_init();
 

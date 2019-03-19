@@ -129,7 +129,10 @@ PHP_FUNCTION (pprofile_end) {
 }
 
 PHP_FUNCTION (pprofile_get_uuid) {
-  get_uuid();
+  uint64 result = get_uuid();
+  array_init(return_value);
+
+  add_assoc_long(return_value, "result", result);
 }
 
 PHP_GINIT_FUNCTION (pprofile) {
@@ -147,10 +150,10 @@ PHP_MINIT_FUNCTION (pprofile) {
   _zend_execute_ex = zend_execute_ex;
   zend_execute_ex = pprofile_execute_ex;
 
+  REGISTER_INI_ENTRIES();
+
   pprofile_init_snowflake();
   pprofile_init_buffer_switch(TSRMLS_C);
-
-  REGISTER_INI_ENTRIES();
 
   return SUCCESS;
 }

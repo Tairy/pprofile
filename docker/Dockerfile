@@ -6,4 +6,4 @@ WORKDIR /working
 ADD ./docker/php.ini /usr/local/etc/php/php.ini
 ADD . /working
 
-RUN cd /working && /usr/local/bin/phpize && ./configure && make && make install
+RUN cd /working && /usr/local/bin/phpize && ./configure && make clean && make && make install
