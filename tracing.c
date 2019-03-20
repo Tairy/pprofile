@@ -173,18 +173,18 @@ void tracing_call_graph_get_parent_child_name(pprofile_call_graph_bucket_t *buck
     if (bucket->parent_recurse_level > 0) {
       snprintf(symbol,
                symbol_len,
-               "%s::%s@%d==>",
+               "%s::%s@%d>",
                ZSTR_VAL(bucket->parent_class),
                ZSTR_VAL(bucket->parent_function),
                bucket->parent_recurse_level);
     } else {
-      snprintf(symbol, symbol_len, "%s::%s==>", ZSTR_VAL(bucket->parent_class), ZSTR_VAL(bucket->parent_function));
+      snprintf(symbol, symbol_len, "%s::%s>", ZSTR_VAL(bucket->parent_class), ZSTR_VAL(bucket->parent_function));
     }
   } else if (bucket->parent_function) {
     if (bucket->parent_recurse_level > 0) {
-      snprintf(symbol, symbol_len, "%s@%d==>", ZSTR_VAL(bucket->parent_function), bucket->parent_recurse_level);
+      snprintf(symbol, symbol_len, "%s@%d>", ZSTR_VAL(bucket->parent_function), bucket->parent_recurse_level);
     } else {
-      snprintf(symbol, symbol_len, "%s==>", ZSTR_VAL(bucket->parent_function));
+      snprintf(symbol, symbol_len, "%s>", ZSTR_VAL(bucket->parent_function));
     }
   } else {
     snprintf(symbol, symbol_len, "");
@@ -228,9 +228,9 @@ void tracing_call_graph_append_to_array(zval *return_value TSRMLS_DC) {
       array_init(stats);
       add_assoc_long(stats, "ct", bucket->count); // 调用次数
       add_assoc_long(stats, "wt", bucket->wall_time); //
-      add_assoc_long(stats, "mem.na", bucket->num_alloc); // 内存分配次数
-      add_assoc_long(stats, "mem.nf", bucket->num_free); // 内存释放次数
-      add_assoc_long(stats, "mem.aa", bucket->amount_alloc); // 消耗内存总量
+      add_assoc_long(stats, "memna", bucket->num_alloc); // 内存分配次数
+      add_assoc_long(stats, "memnf", bucket->num_free); // 内存释放次数
+      add_assoc_long(stats, "memaa", bucket->amount_alloc); // 消耗内存总量
       add_assoc_long(stats, "cpu", bucket->cpu_time);
       add_assoc_long(stats, "mu", bucket->memory);
       add_assoc_long(stats, "pmu", bucket->memory_peak);

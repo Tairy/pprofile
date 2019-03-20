@@ -100,7 +100,7 @@ static int appender_handle_tcp_udp(char *message, size_t message_len, pprofile_l
 
 void influxdb_encode(smart_str *buf, zval *val) {
   uint64 request_id = get_uuid();
-  uint64 current_time = current_time_milliseconds();
+  uint64 current_time = current_time_nano_seconds();
 
   zend_string * str_key, *entry_str_key, *trimd_content;
   zval * entry, *e;
@@ -108,22 +108,15 @@ void influxdb_encode(smart_str *buf, zval *val) {
   ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(val), str_key, entry)
       {
         smart_str tmp_content = {0};
-        int i = 0;
         ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(entry), entry_str_key, e)
             {
-              if (i == Z_ARR_P(entry)->nNumOfElements - 1) {
-                smart_str_append_printf(&tmp_content, "%s=%llu", ZSTR_VAL(entry_str_key), Z_LVAL_P(e));
-              } else {
-                smart_str_append_printf(&tmp_content, "%s=%llu,", ZSTR_VAL(entry_str_key), Z_LVAL_P(e));
-              }
-
-              i++;
+              smart_str_append_printf(&tmp_content, "%s=%llu,", ZSTR_VAL(entry_str_key), Z_LVAL_P(e));
             }
         ZEND_HASH_FOREACH_END();
 
         smart_str_append_printf(buf,
-                                "pprofile,request_id=%lu,"
-                                "function_chain=\"%s\" "
+                                "records,request_id=%lu,"
+                                "function_chain=%s "
                                 "%s "
                                 "%lu\n",
                                 request_id,

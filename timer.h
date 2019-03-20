@@ -34,6 +34,17 @@ static zend_always_inline uint64 current_time_milliseconds() {
   return (uint64) (now.tv_sec * 1000000ULL + now.tv_usec);
 }
 
+static zend_always_inline uint64 current_time_nano_seconds() {
+  struct timeval now;
+
+  if (gettimeofday(&now, NULL) == -1) {
+    php_error(E_ERROR, "gettimeofday error.");
+    return 0ULL;
+  }
+
+  return (uint64) (now.tv_sec * 1000000000ULL + now.tv_usec);
+}
+
 /**
  * Get time delta in microseconds.
  */
