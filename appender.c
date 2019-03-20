@@ -10,7 +10,7 @@
 #include "php_pprofile.h"
 #include "buffer.h"
 #include "ext/json/php_json.h"
-#include "zend_smart_str.h"
+#include "Zend/zend_smart_str.h"
 
 extern ZEND_DECLARE_MODULE_GLOBALS(pprofile);
 
