@@ -108,11 +108,19 @@ void influxdb_encode(smart_str *buf, zval *val) {
   ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(val), str_key, entry)
       {
         smart_str tmp_content = {0};
+        int i = 0;
         ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(entry), entry_str_key, e)
             {
-              smart_str_append_printf(&tmp_content, "%s=%llu,", ZSTR_VAL(entry_str_key), Z_LVAL_P(e));
+              if (i > 0) {
+                smart_str_append_printf(&tmp_content, ",%s=%llu", ZSTR_VAL(entry_str_key), Z_LVAL_P(e));
+              } else {
+                smart_str_append_printf(&tmp_content, "%s=%llu", ZSTR_VAL(entry_str_key), Z_LVAL_P(e));
+              }
+
+              i++;
             }
         ZEND_HASH_FOREACH_END();
+        smart_str_0(&tmp_content);
 
         smart_str_append_printf(buf,
                                 "records,request_id=%lu,"
@@ -123,8 +131,8 @@ void influxdb_encode(smart_str *buf, zval *val) {
                                 ZSTR_VAL(str_key),
                                 tmp_content.s->val,
                                 current_time);
-        smart_str_0(&tmp_content);
         smart_str_free(&tmp_content);
+        smart_str_0(buf);
       }
   ZEND_HASH_FOREACH_END();
 }
