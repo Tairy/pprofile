@@ -127,9 +127,9 @@ pprofile_call_graph_bucket_t *tracing_call_graph_bucket_find(pprofile_call_graph
           previous->function_name == bucket->parent_function) {
         return bucket;
       }
-
-      bucket = bucket->next;
     }
+    
+    bucket = bucket->next;
   }
 
   return NULL;
@@ -230,10 +230,10 @@ void tracing_call_graph_append_to_array(zval *return_value TSRMLS_DC) {
       add_assoc_long(stats, "wt", bucket->wall_time); //
       add_assoc_long(stats, "memna", bucket->num_alloc); // 内存分配次数
       add_assoc_long(stats, "memnf", bucket->num_free); // 内存释放次数
-      add_assoc_long(stats, "memaa", bucket->amount_alloc); // 消耗内存总量
-      add_assoc_long(stats, "cpu", bucket->cpu_time);
-      add_assoc_long(stats, "mu", bucket->memory);
-      add_assoc_long(stats, "pmu", bucket->memory_peak);
+      add_assoc_long(stats, "memaa", bucket->amount_alloc); // 分配内存总量
+      add_assoc_long(stats, "cpu", bucket->cpu_time); // cpu 耗时
+      add_assoc_long(stats, "mu", bucket->memory); // 内存占用
+      add_assoc_long(stats, "pmu", bucket->memory_peak); // 内存峰值
 
       // 这里返回统计信息
       add_assoc_zval(return_value, symbol, stats);

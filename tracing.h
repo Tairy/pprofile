@@ -194,8 +194,8 @@ zend_always_inline static void tracing_exit_frame_call_graph(TSRMLS_D) {
   bucket->num_free += PPRG(num_free) - current_frame->num_free;
   bucket->amount_alloc += PPRG(amount_alloc) - current_frame->amount_alloc;
   bucket->cpu_time += (cpu_timer() - current_frame->cpu_start);
-  bucket->memory += (zend_memory_usage(0 TSRMLS_CC) - current_frame->mu_start);
-  bucket->memory_peak += (zend_memory_peak_usage(0 TSRMLS_CC) - current_frame->pmu_start);
+  bucket->memory += (zend_memory_usage(0 TSRMLS_CC) - current_frame->mu_start); // 内存占用
+  bucket->memory_peak += (zend_memory_peak_usage(0 TSRMLS_CC) - current_frame->pmu_start); // 内存峰值
 
   PPRG(function_hash_counters)[current_frame->hash_code]--;
 
