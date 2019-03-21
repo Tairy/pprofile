@@ -128,7 +128,7 @@ pprofile_call_graph_bucket_t *tracing_call_graph_bucket_find(pprofile_call_graph
         return bucket;
       }
     }
-    
+
     bucket = bucket->next;
   }
 

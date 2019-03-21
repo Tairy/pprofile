@@ -120,19 +120,9 @@ PHP_FUNCTION (pprofile_start) {
 
 PHP_FUNCTION (pprofile_end) {
   tracing_end(TSRMLS_C);
-
   array_init(return_value);
-
   tracing_call_graph_append_to_array(return_value TSRMLS_CC);
-
   pprofile_log_ex(return_value);
-}
-
-PHP_FUNCTION (pprofile_get_uuid) {
-  uint64 result = get_uuid();
-  array_init(return_value);
-
-  add_assoc_long(return_value, "result", result);
 }
 
 PHP_GINIT_FUNCTION (pprofile) {
@@ -263,7 +253,6 @@ ZEND_DLEXPORT void pprofile_execute_ex(zend_execute_data *execute_data) {
 static const zend_function_entry pprofile_functions[] = {
     PHP_FE(pprofile_start, NULL)
     PHP_FE(pprofile_end, NULL)
-    PHP_FE(pprofile_get_uuid, NULL)
     PHP_FE_END
 };
 
