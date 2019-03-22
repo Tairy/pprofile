@@ -161,7 +161,7 @@ void pprofile_log_ex(zval *log_info TSRMLS_DC) {
     case PPROFILE_APPENDER_FILE:
     default:
 
-      PPRG(last_logger)->logger_path = "/tmp/xxx";
+      PPRG(last_logger)->logger_path = "/home/gwxdata/wwwlogs/17gwx/apiv2/influx_pprofile.log";
       appender_handle_file(ZSTR_VAL(performance_log.s),
                            ZSTR_LEN(performance_log.s),
                            PPRG(last_logger)
