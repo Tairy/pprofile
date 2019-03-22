@@ -142,7 +142,7 @@ PHP_MINIT_FUNCTION (pprofile) {
 
   REGISTER_INI_ENTRIES();
 
-  pprofile_init_snowflake();
+//  pprofile_init_snowflake();
   pprofile_init_buffer_switch(TSRMLS_C);
 
   return SUCCESS;
@@ -151,7 +151,7 @@ PHP_MINIT_FUNCTION (pprofile) {
 PHP_MSHUTDOWN_FUNCTION (pprofile) {
 
   UNREGISTER_INI_ENTRIES();
-  pprofile_free_snowflake();
+//  pprofile_free_snowflake();
 
   return SUCCESS;
 }
