@@ -227,7 +227,7 @@ void tracing_call_graph_append_to_array(zval *return_value TSRMLS_DC) {
 
       array_init(stats);
       add_assoc_long(stats, "ct", bucket->count); // 调用次数
-      add_assoc_long(stats, "wt", bucket->wall_time); //
+      add_assoc_long(stats, "wt", bucket->wall_time); // 函数执行时间
       add_assoc_long(stats, "memna", bucket->num_alloc); // 内存分配次数
       add_assoc_long(stats, "memnf", bucket->num_free); // 内存释放次数
       add_assoc_long(stats, "memaa", bucket->amount_alloc); // 分配内存总量

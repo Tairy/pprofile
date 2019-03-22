@@ -99,7 +99,7 @@ static int appender_handle_tcp_udp(char *message, size_t message_len, pprofile_l
 }
 
 void influxdb_encode(smart_str *buf, zval *val) {
-//  uint64 request_id = get_uuid();
+  uint64 request_id = get_uuid();
   uint64 current_time = current_time_nano_seconds();
 
   zend_string * str_key, *entry_str_key, *trimd_content;
@@ -122,20 +122,12 @@ void influxdb_encode(smart_str *buf, zval *val) {
         ZEND_HASH_FOREACH_END();
         smart_str_0(&tmp_content);
 
-//        smart_str_append_printf(buf,
-//                                "records,request_id=%lu,"
-//                                "function_chain=%s "
-//                                "%s "
-//                                "%lu\n",
-//                                request_id,
-//                                ZSTR_VAL(str_key),
-//                                tmp_content.s->val,
-//                                current_time);
         smart_str_append_printf(buf,
-                                "records,"
+                                "records,request_id=%lu,"
                                 "function_chain=%s "
                                 "%s "
                                 "%lu\n",
+                                request_id,
                                 ZSTR_VAL(str_key),
                                 tmp_content.s->val,
                                 current_time);
