@@ -99,6 +99,20 @@ PHP_INI_BEGIN()
                           twepoch,
                           zend_pprofile_globals,
                           pprofile_globals)
+        STD_PHP_INI_ENTRY("pprofile.env",
+                          "dev",
+                          PHP_INI_ALL,
+                          OnUpdateString,
+                          env,
+                          zend_pprofile_globals,
+                          pprofile_globals)
+        STD_PHP_INI_ENTRY("pprofile.log_dir",
+                          "/tmp/flm_pprofile",
+                          PHP_INI_ALL,
+                          OnUpdateString,
+                          log_dir,
+                          zend_pprofile_globals,
+                          pprofile_globals)
 
 PHP_INI_END()
 

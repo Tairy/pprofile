@@ -140,11 +140,12 @@ void influxdb_encode(smart_str *buf, zval *val) {
 void es_encode(smart_str *buf, zval *val) {
   uint64 request_id = get_uuid();
   zval
-  request_id_zval;
-  ZVAL_LONG(&request_id_zval, request_id);
+  request_id_zval, env_zval, env_string;
+  zval * entry;
+  zend_string * str_key;
 
-  zend_string * str_key, *entry_str_key, *trimd_content;
-  zval * entry, *e;
+  ZVAL_LONG(&request_id_zval, request_id);
+  ZVAL_STRING(&env_string, PPRG(env));
 
   ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(val), str_key, entry)
       {
@@ -156,6 +157,7 @@ void es_encode(smart_str *buf, zval *val) {
 
         zend_hash_str_add(Z_ARRVAL_P(entry), "request_id", sizeof("request_id") - 1, &request_id_zval);
         zend_hash_str_add(Z_ARRVAL_P(entry), "function_chain", sizeof("function_chain") - 1, &function_chain_zval);
+        zend_hash_str_add(Z_ARRVAL_P(entry), "env", sizeof("env") - 1, &env_string);
         php_json_encode(&tmp_content, entry, 0);
         smart_str_0(&tmp_content);
         smart_str_append_printf(buf,
@@ -185,7 +187,7 @@ void pprofile_log_ex(zval *log_info TSRMLS_DC) {
     case PPROFILE_APPENDER_FILE:
     default:
 
-      PPRG(last_logger)->logger_path = "/home/gwxdata/wwwlogs/17gwx/apiv2/flm_pprofile";
+      PPRG(last_logger)->logger_path = PPRG(log_dir);
       appender_handle_file(ZSTR_VAL(performance_log.s),
                            ZSTR_LEN(performance_log.s),
                            PPRG(last_logger)

@@ -189,6 +189,8 @@ ZEND_BEGIN_MODULE_GLOBALS(pprofile)
   int appender;
   int appender_retry;
   char *remote_host;
+  char *env;
+  char *log_dir;
   int remote_port;
   int remote_timeout;
 
