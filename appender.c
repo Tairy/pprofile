@@ -158,15 +158,17 @@ void es_encode(smart_str *buf, zval *val) {
         zend_hash_str_add(Z_ARRVAL_P(entry), "request_id", 10, &request_id_zval);
         zend_hash_str_add(Z_ARRVAL_P(entry), "function_chain", 14, &function_chain_zval);
         zend_hash_str_add(Z_ARRVAL_P(entry), "env", 3, &env_string);
+
         php_json_encode(&tmp_content, entry, 0);
         smart_str_0(&tmp_content);
         smart_str_append_printf(buf,
                                 "%s\n",
                                 tmp_content.s->val);
+
         smart_str_free(&tmp_content);
-        smart_str_0(buf);
       }
   ZEND_HASH_FOREACH_END();
+  smart_str_0(buf);
 }
 
 void pprofile_log_ex(zval *log_info TSRMLS_DC) {
