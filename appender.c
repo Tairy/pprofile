@@ -137,11 +137,43 @@ void influxdb_encode(smart_str *buf, zval *val) {
   ZEND_HASH_FOREACH_END();
 }
 
+void es_encode(smart_str *buf, zval *val) {
+  uint64 request_id = get_uuid();
+  zval
+  request_id_zval;
+  ZVAL_LONG(&request_id_zval, request_id);
+
+  zend_string * str_key, *entry_str_key, *trimd_content;
+  zval * entry, *e;
+
+  ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(val), str_key, entry)
+      {
+        smart_str tmp_content = {0};
+
+        zval
+        function_chain_zval;
+        ZVAL_STR(&function_chain_zval, str_key);
+
+        zend_hash_str_add(Z_ARRVAL_P(entry), "request_id", sizeof("request_id") - 1, &request_id_zval);
+        zend_hash_str_add(Z_ARRVAL_P(entry), "function_chain", sizeof("function_chain") - 1, &function_chain_zval);
+        php_json_encode(&tmp_content, entry, 0);
+        smart_str_0(&tmp_content);
+        smart_str_append_printf(buf,
+                                "%s\n",
+                                tmp_content.s->val);
+        smart_str_free(&tmp_content);
+        smart_str_0(buf);
+      }
+  ZEND_HASH_FOREACH_END();
+}
+
 void pprofile_log_ex(zval *log_info TSRMLS_DC) {
   smart_str performance_log = {0};
 
 //  php_json_encode(&performance_log, log_info, 0);
-  influxdb_encode(&performance_log, log_info);
+//  influxdb_encode(&performance_log, log_info);
+
+  es_encode(&performance_log, log_info);
 
   switch PPRG(appender) {
     case PPROFILE_APPENDER_TCP:
@@ -153,7 +185,7 @@ void pprofile_log_ex(zval *log_info TSRMLS_DC) {
     case PPROFILE_APPENDER_FILE:
     default:
 
-      PPRG(last_logger)->logger_path = "/home/gwxdata/wwwlogs/17gwx/apiv2/influx_pprofile";
+      PPRG(last_logger)->logger_path = "/tmp/influx_pprofile";
       appender_handle_file(ZSTR_VAL(performance_log.s),
                            ZSTR_LEN(performance_log.s),
                            PPRG(last_logger)
