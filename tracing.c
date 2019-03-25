@@ -173,18 +173,18 @@ void tracing_call_graph_get_parent_child_name(pprofile_call_graph_bucket_t *buck
     if (bucket->parent_recurse_level > 0) {
       snprintf(symbol,
                symbol_len,
-               "%s::%s@%d>",
+               "%s::%s@%d==>",
                ZSTR_VAL(bucket->parent_class),
                ZSTR_VAL(bucket->parent_function),
                bucket->parent_recurse_level);
     } else {
-      snprintf(symbol, symbol_len, "%s::%s>", ZSTR_VAL(bucket->parent_class), ZSTR_VAL(bucket->parent_function));
+      snprintf(symbol, symbol_len, "%s::%s==>", ZSTR_VAL(bucket->parent_class), ZSTR_VAL(bucket->parent_function));
     }
   } else if (bucket->parent_function) {
     if (bucket->parent_recurse_level > 0) {
-      snprintf(symbol, symbol_len, "%s@%d>", ZSTR_VAL(bucket->parent_function), bucket->parent_recurse_level);
+      snprintf(symbol, symbol_len, "%s@%d==>", ZSTR_VAL(bucket->parent_function), bucket->parent_recurse_level);
     } else {
-      snprintf(symbol, symbol_len, "%s>", ZSTR_VAL(bucket->parent_function));
+      snprintf(symbol, symbol_len, "%s==>", ZSTR_VAL(bucket->parent_function));
     }
   } else {
     snprintf(symbol, symbol_len, "");
