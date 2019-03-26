@@ -238,6 +238,7 @@ void tracing_call_graph_append_to_array(zval *return_value TSRMLS_DC) {
       add_assoc_long(stats, "pmu", bucket->memory_peak); // 内存峰值
       add_assoc_long(stats, "req_id", request_id); // req_id
       add_assoc_string(stats, "key", symbol); // key
+      add_assoc_string(stats, "env", PPRG(env)); // env
 
       // 这里返回统计信息
       add_assoc_zval(return_value, symbol, stats);
