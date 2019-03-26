@@ -8,6 +8,7 @@
 extern ZEND_DECLARE_MODULE_GLOBALS(pprofile);
 
 #include "tracing.h"
+#include "snowflake.h"
 
 static void *(*_zend_malloc)(size_t);
 static void (*_zend_free)(void *);
@@ -218,6 +219,7 @@ void tracing_call_graph_append_to_array(zval *return_value TSRMLS_DC) {
   char symbol[512] = "";
   zval
   stats_zv, *stats = &stats_zv;
+  zend_long request_id = (zend_long) get_uuid();
 
   for (i = 0; i < PPROFILE_CALL_GRAPH_SLOTS; i++) {
     bucket = PPRG(call_graph_buckets)[i];
@@ -234,6 +236,8 @@ void tracing_call_graph_append_to_array(zval *return_value TSRMLS_DC) {
       add_assoc_long(stats, "cpu", bucket->cpu_time); // cpu 耗时
       add_assoc_long(stats, "mu", bucket->memory); // 内存占用
       add_assoc_long(stats, "pmu", bucket->memory_peak); // 内存峰值
+      add_assoc_long(stats, "req_id", request_id); // req_id
+      add_assoc_string(stats, "key", symbol); // key
 
       // 这里返回统计信息
       add_assoc_zval(return_value, symbol, stats);

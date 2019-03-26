@@ -138,26 +138,12 @@ void influxdb_encode(smart_str *buf, zval *val) {
 }
 
 void es_encode(smart_str *buf, zval *val) {
-  uint64 request_id = get_uuid();
-  zval
-  request_id_zval, function_chain_zval;
-
-  static zval env_string;
   zval * entry;
   zend_string * str_key;
-
-  ZVAL_LONG(&request_id_zval, request_id);
-  ZVAL_STRING(&env_string, PPRG(env));
 
   ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(val), str_key, entry)
       {
         smart_str tmp_content = {0};
-
-        ZVAL_STR(&function_chain_zval, str_key);
-
-        zend_hash_str_add(Z_ARRVAL_P(entry), "request_id", 10, &request_id_zval);
-        zend_hash_str_add(Z_ARRVAL_P(entry), "function_chain", 14, &function_chain_zval);
-        zend_hash_str_add(Z_ARRVAL_P(entry), "env", 3, &env_string);
 
         php_json_encode(&tmp_content, entry, 0);
         smart_str_0(&tmp_content);
