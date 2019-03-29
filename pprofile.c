@@ -186,9 +186,7 @@ PHP_RINIT_FUNCTION (pprofile) {
   if (PPRG(current_pid) == 0) {
     PPRG(current_pid) = getpid();
   }
-
-  PPRG(fun_id) = 0;
-
+  
   return SUCCESS;
 }
 
