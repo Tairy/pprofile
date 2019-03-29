@@ -187,7 +187,6 @@ PHP_RINIT_FUNCTION (pprofile) {
     PPRG(current_pid) = getpid();
   }
 
-  PPRG(call_id) = 0;
   return SUCCESS;
 }
 

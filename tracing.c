@@ -241,7 +241,6 @@ void tracing_call_graph_append_to_array(zval *return_value TSRMLS_DC) {
       add_assoc_string(stats, "req_id", request_id_str); // req_id
       add_assoc_string(stats, "fun", symbol); // fun
       add_assoc_string(stats, "env", PPRG(env)); // env
-      add_assoc_long(stats, "call_id", PPRG(call_id)); // call_id
       // 这里返回统计信息
       add_assoc_zval(return_value, symbol, stats);
 
@@ -249,7 +248,6 @@ void tracing_call_graph_append_to_array(zval *return_value TSRMLS_DC) {
 
       tracing_call_graph_bucket_free(bucket);
       bucket = PPRG(call_graph_buckets)[i];
-      PPRG(call_id)++;
     }
   }
 }
