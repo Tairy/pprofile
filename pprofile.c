@@ -122,7 +122,8 @@ ZEND_DLEXPORT void pprofile_execute_internal(zend_execute_data *execute_data, zv
 ZEND_DLEXPORT void pprofile_execute_ex(zend_execute_data *execute_data);
 
 PHP_FUNCTION (pprofile_start) {
-  zend_long flags = 0;
+  zend_long
+  flags = 0;
 
   if (zend_parse_parameters(ZEND_NUM_ARGS () TSRMLS_CC, "|l", &flags) == FAILURE) {
     return;
@@ -185,6 +186,8 @@ PHP_RINIT_FUNCTION (pprofile) {
   if (PPRG(current_pid) == 0) {
     PPRG(current_pid) = getpid();
   }
+
+  PPRG(fun_id) = 0;
 
   return SUCCESS;
 }
