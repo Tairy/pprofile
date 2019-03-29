@@ -203,6 +203,9 @@ ZEND_BEGIN_MODULE_GLOBALS(pprofile)
   uint64 worker_id;
   uint64 twepoch;
 
+  // fun_id
+  int fun_id;
+
 ZEND_END_MODULE_GLOBALS(pprofile)
 
 #endif    /* PHP_PPROFILE_H */
