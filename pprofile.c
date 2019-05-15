@@ -137,7 +137,7 @@ PHP_FUNCTION (pprofile_end) {
   tracing_end(TSRMLS_C);
   array_init(return_value);
   tracing_call_graph_append_to_array(return_value TSRMLS_CC);
-  pprofile_log_ex(return_value);
+//  pprofile_log_ex(return_value);
 }
 
 PHP_GINIT_FUNCTION (pprofile) {
