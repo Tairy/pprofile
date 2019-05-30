@@ -137,7 +137,7 @@ PHP_FUNCTION (pprofile_end) {
   tracing_end(TSRMLS_C);
   array_init(return_value);
   tracing_call_graph_append_to_array(return_value TSRMLS_CC);
-//  pprofile_log_ex(return_value);
+  pprofile_log_ex(return_value);
 }
 
 PHP_GINIT_FUNCTION (pprofile) {
@@ -157,7 +157,7 @@ PHP_MINIT_FUNCTION (pprofile) {
 
   REGISTER_INI_ENTRIES();
 
-//  pprofile_init_snowflake();
+  pprofile_init_snowflake();
   pprofile_init_buffer_switch(TSRMLS_C);
 
   return SUCCESS;
@@ -166,7 +166,7 @@ PHP_MINIT_FUNCTION (pprofile) {
 PHP_MSHUTDOWN_FUNCTION (pprofile) {
 
   UNREGISTER_INI_ENTRIES();
-//  pprofile_free_snowflake();
+  pprofile_free_snowflake();
 
   return SUCCESS;
 }

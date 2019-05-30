@@ -218,10 +218,10 @@ void tracing_call_graph_append_to_array(zval *return_value TSRMLS_DC) {
   pprofile_call_graph_bucket_t *bucket;
   char symbol[512] = "";
   zval
-      stats_zv, *stats = &stats_zv;
-//  uint64 request_id = get_uuid();
-//  char request_id_str[32];
-//  sprintf(request_id_str, "%lu", request_id);
+  stats_zv, *stats = &stats_zv;
+  uint64 request_id = get_uuid();
+  char request_id_str[32];
+  sprintf(request_id_str, "%lu", request_id);
 
   for (i = 0; i < PPROFILE_CALL_GRAPH_SLOTS; i++) {
     bucket = PPRG(call_graph_buckets)[i];
@@ -238,7 +238,7 @@ void tracing_call_graph_append_to_array(zval *return_value TSRMLS_DC) {
       add_assoc_long(stats, "cpu", bucket->cpu_time); // cpu 耗时
       add_assoc_long(stats, "mu", bucket->memory); // 内存占用
       add_assoc_long(stats, "pmu", bucket->memory_peak); // 内存峰值
-//      add_assoc_string(stats, "req_id", request_id_str); // req_id
+      add_assoc_string(stats, "req_id", request_id_str); // req_id
       add_assoc_string(stats, "fun", symbol); // fun
       add_assoc_string(stats, "env", PPRG(env)); // env
       // 这里返回统计信息
